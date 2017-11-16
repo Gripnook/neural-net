@@ -30,6 +30,13 @@ public:
     // for the given training example input and output.
     Matrix<double>
         getGradient(Matrix<double> input, const Matrix<double>& output) const;
+
+private:
+    // Expands the given output vector to include a dummy input.
+    Matrix<double> expand(const Matrix<double>& output) const;
+
+    // Reduces the given weight matrix to exclude the dummy input weight.
+    Matrix<double> reduce(const Matrix<double>& weights) const;
 };
 
 // Computes the sigmoid function at the given value of x.
