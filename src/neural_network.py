@@ -85,8 +85,8 @@ class NeuralNetwork:
             outputs.append(propagated_input)
 
         # Backward propagation
-        delta = sigmoid_prime(outputs[self.num_layers-1]).dot(expected_output_vector - outputs[self.num_layers - 1])
-        gradients[self.num_layers-2] = - delta.dot(expand(outputs[self.num_layers-2]).transpose())
+        delta = sigmoid_prime(outputs[self.num_layers - 1]).dot(expected_output_vector - outputs[self.num_layers - 1])
+        gradients[self.num_layers - 2] = - delta.dot(expand(outputs[self.num_layers - 2]).transpose())
         for i in range(self.num_layers - 3, -1, -1):
             delta = sigmoid_prime(outputs[i + 1]) * ((reduce_weights(self._weights[i + 1]).transpose()).dot(delta))
             gradients[i] = - delta.dot(expand(outputs[i]).transpose())
