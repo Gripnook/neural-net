@@ -16,7 +16,11 @@ NeuralNetwork::NeuralNetwork(std::vector<int> layerSizes)
                 "neural network layers must have at least one neuron"};
 
     for (int i = 1; i < layers; ++i)
+    {
         weights.emplace_back(layerSizes[i], layerSizes[i - 1] + 1);
+        for (int j = 0; j < weights[i - 1].size(); ++j)
+            weights[i - 1](j) = static_cast<double>(rand() % 10000) / 5000 - 1;
+    }
 }
 
 Matrix<double> NeuralNetwork::predict(Matrix<double> input) const
