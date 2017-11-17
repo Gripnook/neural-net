@@ -48,7 +48,11 @@ Temporary Items
 
 # Build files
 build
+*.pyc
 
 # Visual Studio
 .vs
 .vscode
+
+# PyCharm
+.idea
