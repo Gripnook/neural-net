@@ -43,10 +43,10 @@ class NeuralNetwork:
         """
         Performs standard gradient descent.
 
-        :param input_vectors:
-        :param output_vectors:
-        :param num_iterations:
-        :param alpha:
+        :param input_vectors: the input vectors
+        :param output_vectors: the output vectors
+        :param num_iterations: the number of training iterations
+        :param alpha: the learning rate
         """
         for _ in range(num_iterations):
             gradient_sum = sum([self._get_gradient(in_example, out_example)
@@ -54,6 +54,14 @@ class NeuralNetwork:
             self._set_weights(self._get_flattened_weights() - alpha * gradient_sum)
 
     def _stochastic_gradient_descent(self, input_vectors, output_vectors, num_iterations, alpha):
+        """
+        Performs stochastic gradient descent.
+
+        :param input_vectors: the input vectors
+        :param output_vectors: the output vectors
+        :param num_iterations: the number of training iterations
+        :param alpha: the learning rate
+        """
         for _ in range(num_iterations):
             for in_example, out_example in zip(input_vectors, output_vectors):
                 self._set_weights(self._get_flattened_weights() - alpha * self._get_gradient(in_example, out_example))
