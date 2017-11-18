@@ -46,15 +46,15 @@ class NeuralNetwork(object):
         self._bias_weights = weights[:self._num_layers - 1]
         self._weights = weights[self._num_layers - 1:]
 
-    def get_loss(self, input_vector, expected_output_vector):
+    def get_loss(self, input_vectors, expected_output_vectors):
         """
-        Computes the L2 loss for the given training example.
+        Computes the L2 loss for the given training examples.
 
-        :param input_vector: the input data
-        :param expected_output_vector: the expected output data
+        :param input_vectors: the input data
+        :param expected_output_vectors: the expected output data
         :return: the L2 loss
         """
-        return 0.5 * np.sum((expected_output_vector - self.predict(input_vector)) ** 2)
+        return 0.5 * np.sum((expected_output_vectors - self.predict(input_vectors)) ** 2)
 
     def get_gradient(self, input_vector, expected_output_vector):
         """
