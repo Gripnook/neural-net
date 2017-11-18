@@ -11,9 +11,11 @@ class NeuralNetwork:
             if layer_size <= 0:
                 raise ValueError('Neural network layers must have at least one neuron.')
 
+        self._bias_weights = []
         self._weights = []
         for i in range(1, self.num_layers):
-            self._weights.append(np.random.uniform(-1, 1, (layer_sizes[i], layer_sizes[i - 1] + 1)))
+            self._bias_weights.append(np.random.uniform(-1, 1, (layer_sizes[i], 1)))
+            self._weights.append(np.random.uniform(-1, 1, (layer_sizes[i], layer_sizes[i - 1])))
 
     def train(self, input_vectors, output_vectors, gradient_descent_method='stochastic',
               num_iterations=1000, alpha=0.1):
@@ -32,8 +34,8 @@ class NeuralNetwork:
         :return: the predicted output
         """
         propagated_input = np.hstack(input_vectors)
-        for w in self._weights:
-            propagated_input = sigmoid(w.dot(expand(propagated_input)))
+        for w, W in zip(self._bias_weights, self._weights):
+            propagated_input = sigmoid(w + W.dot(propagated_input))
         return propagated_input
 
     def _standard_gradient_descent(self, input_vectors, output_vectors, num_iterations, alpha):
@@ -72,24 +74,28 @@ class NeuralNetwork:
         :param expected_output_vector: the expected output data
         :return: the gradient of the loss
         """
+        bias_gradients = [np.array([]) for _ in range(self.num_layers - 1)]
         gradients = [np.array([]) for _ in range(self.num_layers - 1)]
         outputs = [input_vector]
 
         # Forward propagation
         propagated_input = input_vector
-        for w in self._weights:
-            propagated_input = sigmoid(w.dot(expand(propagated_input)))
+        for w, W in zip(self._bias_weights, self._weights):
+            propagated_input = sigmoid(w + W.dot(propagated_input))
             outputs.append(propagated_input)
 
         # Backward propagation
         delta = sigmoid_prime(outputs[self.num_layers - 1]).dot(expected_output_vector - outputs[self.num_layers - 1])
-        gradients[self.num_layers - 2] = - delta.dot(expand(outputs[self.num_layers - 2]).transpose())
+        bias_gradients[self.num_layers - 2] = - delta
+        gradients[self.num_layers - 2] = - delta.dot(outputs[self.num_layers - 2].transpose())
         for i in range(self.num_layers - 3, -1, -1):
-            delta = sigmoid_prime(outputs[i + 1]) * ((reduce_weights(self._weights[i + 1]).transpose()).dot(delta))
-            gradients[i] = - delta.dot(expand(outputs[i]).transpose())
+            delta = sigmoid_prime(outputs[i + 1]) * ((self._weights[i + 1].transpose()).dot(delta))
+            bias_gradients[i] = -delta
+            gradients[i] = - delta.dot(outputs[i].transpose())
 
         flattened_gradient = np.array([])
-        for gradient in gradients:
+        for bias_gradient, gradient in zip(bias_gradients, gradients):
+            flattened_gradient = np.append(flattened_gradient, bias_gradient)
             flattened_gradient = np.append(flattened_gradient, gradient)
         return flattened_gradient
 
@@ -100,8 +106,9 @@ class NeuralNetwork:
         :return: the weights as a flattened matrix (vector)
         """
         flattened_weights = np.array([])
-        for w in self._weights:
+        for w, W in zip(self._bias_weights, self._weights):
             flattened_weights = np.append(flattened_weights, w)
+            flattened_weights = np.append(flattened_weights, W)
         return flattened_weights
 
     def _set_weights(self, flattened_weights):
@@ -111,33 +118,14 @@ class NeuralNetwork:
         :param flattened_weights: the flattened weight vector
         """
         index = 0
-        for w in self._weights:
+        for w, W in zip(self._bias_weights, self._weights):
             for i in range(w.size):
-                weight_index = np.unravel_index([i], w.shape)
-                w[weight_index] = flattened_weights[index]
+                w[i] = flattened_weights[index]
                 index += 1
-
-
-def expand(output_vector):
-    """
-    Expands the given output_vector to include a dummy input to represent the bias.
-
-    :param output_vector: the output vector
-    :return: the expanded output vector
-    """
-    num_cols = output_vector.shape[1] if len(output_vector.shape) > 1 else output_vector.shape
-    bias = np.ones(num_cols)
-    return np.vstack((bias, output_vector))
-
-
-def reduce_weights(expanded_weights):
-    """
-    Reduces the given weight matrix to exclude the dummy input weight.
-
-    :param expanded_weights: the expanded weights
-    :return: the reduced weights
-    """
-    return expanded_weights[:, 1:]
+            for i in range(W.size):
+                weight_index = np.unravel_index([i], W.shape)
+                W[weight_index] = flattened_weights[index]
+                index += 1
 
 
 def sigmoid(x):
