@@ -54,7 +54,7 @@ class NeuralNetwork(object):
         :param expected_output_vectors: the expected output data
         :return: the L2 loss
         """
-        return 0.5 * np.sum((expected_output_vectors - self.predict(input_vectors)) ** 2)
+        return 0.5 * np.sum((np.hstack(expected_output_vectors) - self.predict(input_vectors)) ** 2)
 
     def get_gradient(self, input_vector, expected_output_vector):
         """
