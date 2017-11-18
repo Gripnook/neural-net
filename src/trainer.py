@@ -1,8 +1,4 @@
-import numpy as np
 from copy import deepcopy
-
-from neural_network import NeuralNetwork
-
 
 class Trainer(object):
     def __init__(self, nn):
@@ -32,6 +28,7 @@ class Trainer(object):
     def _standard_gradient_descent(self, input_vectors, output_vectors,
                                    num_iterations, alpha):
         for _ in range(num_iterations):
+            # We copy the weights in order to update them only after we sum the gradients.
             weights = deepcopy(self._nn.get_weights())
             for input_vector, output_vector in zip(input_vectors, output_vectors):
                 gradients = self._nn.get_gradient(input_vector, output_vector)

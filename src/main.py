@@ -17,6 +17,7 @@ LOGGING_LEVELS = {
 def setup_logging(level):
     """
     Set up logging, with the specified logging level.
+
     :param level: the logging level
     """
     logging.basicConfig(

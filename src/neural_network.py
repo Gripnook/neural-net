@@ -25,8 +25,8 @@ class NeuralNetwork(object):
         :return: the predicted output
         """
         propagated_input = np.hstack(input_vectors)
-        for w, W in zip(self._bias_weights, self._weights):
-            propagated_input = sigmoid(w + W.dot(propagated_input))
+        for bias_weight, weight in zip(self._bias_weights, self._weights):
+            propagated_input = sigmoid(bias_weight + weight.dot(propagated_input))
         return propagated_input
 
     def get_weights(self):
@@ -43,36 +43,35 @@ class NeuralNetwork(object):
 
         :param weights: the weights as a list of matrices
         """
-        self._bias_weights = weights[0:self._num_layers - 1]
-        self._weights = weights[(self._num_layers - 1):]
+        self._bias_weights = weights[:self._num_layers - 1]
+        self._weights = weights[self._num_layers - 1:]
 
     def get_gradient(self, input_vector, expected_output_vector):
         """
-        Computes the gradient of the L2 loss with respect to the weight vector for the given training example input
-        and output.
+        Computes the gradient of the L2 loss with respect to the weights for the given training example.
 
         :param input_vector: the input data
         :param expected_output_vector: the expected output data
-        :return: the gradient of the L2 loss
+        :return: the gradient of the L2 loss as a list of matrices
         """
         bias_gradients = [np.array([]) for _ in range(self._num_layers - 1)]
         gradients = [np.array([]) for _ in range(self._num_layers - 1)]
         outputs = [input_vector]
 
-        # Forward propagation
+        # Forward propagation.
         propagated_input = input_vector
-        for w, W in zip(self._bias_weights, self._weights):
-            propagated_input = sigmoid(w + W.dot(propagated_input))
+        for bias_weight, weight in zip(self._bias_weights, self._weights):
+            propagated_input = sigmoid(bias_weight + weight.dot(propagated_input))
             outputs.append(propagated_input)
 
-        # Backward propagation
+        # Backward propagation.
         delta = sigmoid_prime(outputs[self._num_layers - 1]).dot(expected_output_vector - outputs[self._num_layers - 1])
-        bias_gradients[self._num_layers - 2] = - delta
-        gradients[self._num_layers - 2] = - delta.dot(outputs[self._num_layers - 2].transpose())
+        bias_gradients[self._num_layers - 2] = -delta
+        gradients[self._num_layers - 2] = -delta.dot(outputs[self._num_layers - 2].transpose())
         for i in range(self._num_layers - 3, -1, -1):
             delta = sigmoid_prime(outputs[i + 1]) * ((self._weights[i + 1].transpose()).dot(delta))
-            bias_gradients[i] = - delta
-            gradients[i] = - delta.dot(outputs[i].transpose())
+            bias_gradients[i] = -delta
+            gradients[i] = -delta.dot(outputs[i].transpose())
 
         return bias_gradients + gradients
 
@@ -91,7 +90,7 @@ def sigmoid_prime(y):
     """
     Computes the derivative of the sigmoid function at the given value of y = f(x).
 
-    :param y: the y value (sigmoid value)
-    :return: the derivative value
+    :param y: the value of the sigmoid function
+    :return: the derivative at the given y value
     """
     return y * (1 - y)
