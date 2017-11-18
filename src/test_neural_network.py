@@ -40,11 +40,11 @@ class TestNeuralNetwork(unittest.TestCase):
         weights = deepcopy(self.weights)
         weights[i][j, k] += epsilon
         self.nn.set_weights(weights)
-        loss1 = self.nn.get_loss(self.input_vector, self.output_vector)
+        loss1 = self.nn.get_loss([self.input_vector], [self.output_vector])
         weights = deepcopy(self.weights)
         weights[i][j, k] -= epsilon
         self.nn.set_weights(weights)
-        loss2 = self.nn.get_loss(self.input_vector, self.output_vector)
+        loss2 = self.nn.get_loss([self.input_vector], [self.output_vector])
         return (loss1 - loss2) / (2 * epsilon)
 
 

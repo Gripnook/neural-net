@@ -24,7 +24,7 @@ class NeuralNetwork(object):
         :param input_vectors: the input data
         :return: the predicted output
         """
-        propagated_input = input_vectors
+        propagated_input = np.hstack(input_vectors)
         for bias_weight, weight in zip(self._bias_weights, self._weights):
             propagated_input = sigmoid(bias_weight + weight.dot(propagated_input))
         return propagated_input

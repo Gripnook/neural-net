@@ -64,6 +64,6 @@ class Trainer(object):
             gradient = np.zeros(weights.shape)
             for input_vector, output_vector in zip(input_vectors, output_vectors):
                 gradient += flatten(self._nn.get_gradient(input_vector, output_vector))
-            return self._nn.get_loss(np.hstack(input_vectors), np.hstack(output_vectors)), gradient
+            return self._nn.get_loss(input_vectors, output_vectors), gradient
 
         optimize.minimize(loss, flatten(self._nn.get_weights()), method='BFGS', jac=True)
