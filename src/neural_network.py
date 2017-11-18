@@ -3,8 +3,8 @@ import numpy as np
 
 class NeuralNetwork(object):
     def __init__(self, layer_sizes):
-        self.num_layers = len(layer_sizes)
-        if self.num_layers <= 0:
+        self._num_layers = len(layer_sizes)
+        if self._num_layers <= 0:
             raise ValueError('Neural network must have at least one layer.')
 
         for layer_size in layer_sizes:
@@ -13,7 +13,7 @@ class NeuralNetwork(object):
 
         self._bias_weights = []
         self._weights = []
-        for i in range(1, self.num_layers):
+        for i in range(1, self._num_layers):
             self._bias_weights.append(np.random.uniform(-1, 1, (layer_sizes[i], 1)))
             self._weights.append(np.random.uniform(-1, 1, (layer_sizes[i], layer_sizes[i - 1])))
 
@@ -31,28 +31,20 @@ class NeuralNetwork(object):
 
     def get_weights(self):
         """
-        Flattens the weight matrices to produce a single vector.
+        Returns the weights as a list of matrices.
 
-        :return: the weights as a flattened matrix (vector)
+        :return: the weights as a list of matrices
         """
-        flattened_weights = np.array([])
-        for w, W in zip(self._bias_weights, self._weights):
-            flattened_weights = np.append(flattened_weights, w)
-            flattened_weights = np.append(flattened_weights, W)
-        return flattened_weights
+        return self._bias_weights + self._weights
 
-    def set_weights(self, flattened_weights):
+    def set_weights(self, weights):
         """
-        Updates the weight matrices based on a flattened vector.
+        Updates the weight matrices with the given list of matrices.
 
-        :param flattened_weights: the flattened weight vector
+        :param weights: the weights as a list of matrices
         """
-        index = 0
-        for w, W in zip(self._bias_weights, self._weights):
-            w[:] = np.reshape(flattened_weights[index:index + w.size], w.shape)
-            index += w.size
-            W[:] = np.reshape(flattened_weights[index:index + W.size], W.shape)
-            index += W.size
+        self._bias_weights = weights[0:self._num_layers - 1]
+        self._weights = weights[(self._num_layers - 1):]
 
     def get_gradient(self, input_vector, expected_output_vector):
         """
@@ -61,10 +53,10 @@ class NeuralNetwork(object):
 
         :param input_vector: the input data
         :param expected_output_vector: the expected output data
-        :return: the gradient of the loss
+        :return: the gradient of the L2 loss
         """
-        bias_gradients = [np.array([]) for _ in range(self.num_layers - 1)]
-        gradients = [np.array([]) for _ in range(self.num_layers - 1)]
+        bias_gradients = [np.array([]) for _ in range(self._num_layers - 1)]
+        gradients = [np.array([]) for _ in range(self._num_layers - 1)]
         outputs = [input_vector]
 
         # Forward propagation
@@ -74,19 +66,15 @@ class NeuralNetwork(object):
             outputs.append(propagated_input)
 
         # Backward propagation
-        delta = sigmoid_prime(outputs[self.num_layers - 1]).dot(expected_output_vector - outputs[self.num_layers - 1])
-        bias_gradients[self.num_layers - 2] = - delta
-        gradients[self.num_layers - 2] = - delta.dot(outputs[self.num_layers - 2].transpose())
-        for i in range(self.num_layers - 3, -1, -1):
+        delta = sigmoid_prime(outputs[self._num_layers - 1]).dot(expected_output_vector - outputs[self._num_layers - 1])
+        bias_gradients[self._num_layers - 2] = - delta
+        gradients[self._num_layers - 2] = - delta.dot(outputs[self._num_layers - 2].transpose())
+        for i in range(self._num_layers - 3, -1, -1):
             delta = sigmoid_prime(outputs[i + 1]) * ((self._weights[i + 1].transpose()).dot(delta))
             bias_gradients[i] = - delta
             gradients[i] = - delta.dot(outputs[i].transpose())
 
-        flattened_gradient = np.array([])
-        for bias_gradient, gradient in zip(bias_gradients, gradients):
-            flattened_gradient = np.append(flattened_gradient, bias_gradient)
-            flattened_gradient = np.append(flattened_gradient, gradient)
-        return flattened_gradient
+        return bias_gradients + gradients
 
 
 def sigmoid(x):
