@@ -24,10 +24,10 @@ class NeuralNetwork(object):
         :param input_vectors: the input data
         :return: the predicted output
         """
-        propagated_input = np.hstack(input_vectors)
+        propagated_input = np.vstack(input_vectors).transpose()
         for bias_weight, weight in zip(self._bias_weights, self._weights):
             propagated_input = sigmoid(bias_weight + weight.dot(propagated_input))
-        return propagated_input
+        return propagated_input.transpose()
 
     def get_weights(self):
         """
@@ -54,7 +54,7 @@ class NeuralNetwork(object):
         :param expected_output_vectors: the expected output data
         :return: the L2 loss
         """
-        return 0.5 * np.sum((np.hstack(expected_output_vectors) - self.predict(input_vectors)) ** 2)
+        return 0.5 * np.sum((np.vstack(expected_output_vectors) - self.predict(input_vectors)) ** 2)
 
     def get_gradient(self, input_vector, expected_output_vector):
         """
@@ -66,16 +66,17 @@ class NeuralNetwork(object):
         """
         bias_gradients = [np.array([]) for _ in range(self._num_layers - 1)]
         gradients = [np.array([]) for _ in range(self._num_layers - 1)]
-        outputs = [input_vector]
+        outputs = [input_vector.transpose()]
 
         # Forward propagation.
-        propagated_input = input_vector
+        propagated_input = outputs[0]
         for bias_weight, weight in zip(self._bias_weights, self._weights):
             propagated_input = sigmoid(bias_weight + weight.dot(propagated_input))
             outputs.append(propagated_input)
 
         # Backward propagation.
-        delta = sigmoid_prime(outputs[self._num_layers - 1]) * (expected_output_vector - outputs[self._num_layers - 1])
+        delta = sigmoid_prime(outputs[self._num_layers - 1]) * (
+            expected_output_vector.transpose() - outputs[self._num_layers - 1])
         bias_gradients[self._num_layers - 2] = -delta
         gradients[self._num_layers - 2] = -delta.dot(outputs[self._num_layers - 2].transpose())
         for i in range(self._num_layers - 3, -1, -1):

@@ -51,12 +51,12 @@ def main():
     setup_logging('info')
     nn = NeuralNetwork((2, 3, 1))
     trainer = Trainer(nn)
-    input_examples = np.transpose(np.array([
+    input_examples = np.array([
         [[3, 5]], [[5, 1]], [[10, 2]]
-    ]), (0, 2, 1))
-    output_examples = np.transpose(np.array([
+    ])
+    output_examples = np.array([
         [[0.75]], [[0.82]], [[0.93]]
-    ]), (0, 2, 1))
+    ])
     test_standard_gradient_descent(trainer, nn, input_examples, output_examples)
     test_stochastic_gradient_descent(trainer, nn, input_examples, output_examples)
     test_bfgs(trainer, nn, input_examples, output_examples)

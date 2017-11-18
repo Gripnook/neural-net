@@ -15,10 +15,12 @@ class TestTrainer(unittest.TestCase):
 
     def test_train_stochastic(self):
         # given
-        input_vectors = [np.array([1, 1]).transpose(),
-                         np.array([2, 3]).transpose(),
-                         np.array([2, 1]).transpose()]
-        output_vectors = [np.array([2]), np.array([13]), np.array([5])]
+        input_vectors = np.array([
+            [[1, 1]], [[2, 3]], [[2, 1]]
+        ])
+        output_vectors = np.array([
+            [[2]], [[13]], [[5]]
+        ])
         method = 'stochastic'
         num_iterations = 100
         alpha = 0.1
@@ -33,10 +35,12 @@ class TestTrainer(unittest.TestCase):
 
     def test_train_standard(self):
         # given
-        input_vectors = [np.array([1, 1]).transpose(),
-                         np.array([2, 3]).transpose(),
-                         np.array([2, 1]).transpose()]
-        output_vectors = [np.array([2]), np.array([13]), np.array([5])]
+        input_vectors = np.array([
+            [[1, 1]], [[2, 3]], [[2, 1]]
+        ])
+        output_vectors = np.array([
+            [[2]], [[13]], [[5]]
+        ])
         method = 'standard'
         num_iterations = 100
         alpha = 0.1
@@ -51,10 +55,12 @@ class TestTrainer(unittest.TestCase):
 
     def test_train_invalid(self):
         # given
-        input_vectors = [np.array([1, 1]).transpose(),
-                         np.array([2, 3]).transpose(),
-                         np.array([2, 1]).transpose()]
-        output_vectors = [np.array([2]), np.array([13]), np.array([5])]
+        input_vectors = np.array([
+            [[1, 1]], [[2, 3]], [[2, 1]]
+        ])
+        output_vectors = np.array([
+            [[2]], [[13]], [[5]]
+        ])
         method = 'invalid'
         num_iterations = 100
         alpha = 0.1

@@ -11,7 +11,7 @@ class TestNeuralNetwork(unittest.TestCase):
     def setUp(self):
         self.nn = NeuralNetwork((2, 5, 1))
         self.weights = deepcopy(self.nn.get_weights())
-        self.input_vector = np.array([[1, 1]]).transpose()
+        self.input_vector = np.array([[1, 1]])
         self.output_vector = np.array([[2]])
 
     def test_predict(self):
