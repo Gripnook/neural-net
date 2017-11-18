@@ -1,5 +1,6 @@
 from copy import deepcopy
 
+
 class Trainer(object):
     def __init__(self, nn):
         self._nn = nn

@@ -28,13 +28,13 @@ def setup_logging(level):
 
 def test_standard_gradient_descent(trainer, nn, input_examples, output_examples):
     trainer.train(input_examples, output_examples, method='standard')
-    prediction = nn.predict(input_examples)
+    prediction = nn.predict(np.hstack(input_examples))
     logging.info('Prediction for standard: {}'.format(prediction))
 
 
 def test_stochastic_gradient_descent(trainer, nn, input_examples, output_examples):
     trainer.train(input_examples, output_examples, method='stochastic')
-    prediction = nn.predict(input_examples)
+    prediction = nn.predict(np.hstack(input_examples))
     logging.info('Prediction for stochastic: {}'.format(prediction))
 
 
