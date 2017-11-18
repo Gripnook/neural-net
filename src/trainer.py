@@ -1,5 +1,8 @@
 import numpy as np
 
+from scipy import optimize
+from copy import deepcopy
+
 
 class Trainer(object):
     def __init__(self, nn):
@@ -13,6 +16,8 @@ class Trainer(object):
         elif method is 'standard':
             self._standard_gradient_descent(input_vectors, output_vectors,
                                             num_iterations, alpha)
+        elif method is 'BFGS':
+            self._bfgs(input_vectors, output_vectors)
         else:
             raise ValueError('Invalid gradient descent method')
 
@@ -38,3 +43,27 @@ class Trainer(object):
             for weight, total_gradient in zip(weights, total_gradients):
                 weight -= alpha * total_gradient
             self._nn.set_weights(weights)
+
+    def _bfgs(self, input_vectors, output_vectors):
+        def flatten(weights):
+            flattened_weights = np.array([])
+            for weight in weights:
+                flattened_weights = np.append(flattened_weights, weight)
+            return flattened_weights
+
+        def inflate(flattened_weights):
+            index = 0
+            weights = deepcopy(self._nn.get_weights())
+            for weight in weights:
+                weight[:] = np.reshape(flattened_weights[index:index + weight.size], weight.shape)
+                index += weight.size
+            return weights
+
+        def loss(weights):
+            self._nn.set_weights(inflate(weights))
+            gradient = np.zeros(weights.shape)
+            for input_vector, output_vector in zip(input_vectors, output_vectors):
+                gradient += flatten(self._nn.get_gradient(input_vector, output_vector))
+            return self._nn.get_loss(np.hstack(input_vectors), np.hstack(output_vectors)), gradient
+
+        optimize.minimize(loss, flatten(self._nn.get_weights()), method='BFGS', jac=True)

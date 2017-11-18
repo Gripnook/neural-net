@@ -40,6 +40,13 @@ def test_stochastic_gradient_descent(trainer, nn, input_examples, output_example
     logging.info('L2 loss: {}'.format(nn.get_loss(np.hstack(input_examples), np.hstack(output_examples))))
 
 
+def test_bfgs(trainer, nn, input_examples, output_examples):
+    trainer.train(input_examples, output_examples, method='BFGS')
+    prediction = nn.predict(np.hstack(input_examples))
+    logging.info('Prediction for BFGS: {}'.format(prediction))
+    logging.info('L2 loss: {}'.format(nn.get_loss(np.hstack(input_examples), np.hstack(output_examples))))
+
+
 def main():
     setup_logging('info')
     nn = NeuralNetwork((2, 3, 1))
@@ -56,6 +63,7 @@ def main():
     ]
     test_standard_gradient_descent(trainer, nn, input_examples, output_examples)
     test_stochastic_gradient_descent(trainer, nn, input_examples, output_examples)
+    test_bfgs(trainer, nn, input_examples, output_examples)
 
 
 if __name__ == '__main__':
