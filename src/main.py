@@ -3,6 +3,7 @@ import logging
 import numpy as np
 
 from neural_network import NeuralNetwork
+from trainer import Trainer
 
 LOGGING_LEVELS = {
     'info': logging.INFO,
@@ -24,14 +25,14 @@ def setup_logging(level):
         level=LOGGING_LEVELS[level])
 
 
-def test_standard_gradient_descent(nn, input_examples, output_examples):
-    nn.train(input_examples, output_examples, gradient_descent_method='standard')
+def test_standard_gradient_descent(trainer, nn, input_examples, output_examples):
+    trainer.train(input_examples, output_examples, method='standard')
     prediction = nn.predict(input_examples)
     logging.info('Prediction for standard: {}'.format(prediction))
 
 
-def test_stochastic_gradient_descent(nn, input_examples, output_examples):
-    nn.train(input_examples, output_examples, gradient_descent_method='stochastic')
+def test_stochastic_gradient_descent(trainer, nn, input_examples, output_examples):
+    trainer.train(input_examples, output_examples, method='stochastic')
     prediction = nn.predict(input_examples)
     logging.info('Prediction for stochastic: {}'.format(prediction))
 
@@ -39,6 +40,7 @@ def test_stochastic_gradient_descent(nn, input_examples, output_examples):
 def main():
     setup_logging('info')
     nn = NeuralNetwork((2, 3, 1))
+    trainer = Trainer(nn)
     input_examples = [
         np.array([[3, 5]]).transpose(),
         np.array([[5, 1]]).transpose(),
@@ -49,8 +51,8 @@ def main():
         np.array([0.82]),
         np.array([0.93])
     ]
-    test_standard_gradient_descent(nn, input_examples, output_examples)
-    test_stochastic_gradient_descent(nn, input_examples, output_examples)
+    test_standard_gradient_descent(trainer, nn, input_examples, output_examples)
+    test_stochastic_gradient_descent(trainer, nn, input_examples, output_examples)
 
 
 if __name__ == '__main__':

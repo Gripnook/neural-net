@@ -1,7 +1,7 @@
 import numpy as np
 
 
-class NeuralNetwork:
+class NeuralNetwork(object):
     def __init__(self, layer_sizes):
         self.num_layers = len(layer_sizes)
         if self.num_layers <= 0:
@@ -17,15 +17,6 @@ class NeuralNetwork:
             self._bias_weights.append(np.random.uniform(-1, 1, (layer_sizes[i], 1)))
             self._weights.append(np.random.uniform(-1, 1, (layer_sizes[i], layer_sizes[i - 1])))
 
-    def train(self, input_vectors, output_vectors, gradient_descent_method='stochastic',
-              num_iterations=1000, alpha=0.1):
-        if gradient_descent_method is 'stochastic':
-            self._stochastic_gradient_descent(input_vectors, output_vectors, num_iterations, alpha)
-        elif gradient_descent_method is 'standard':
-            self._standard_gradient_descent(input_vectors, output_vectors, num_iterations, alpha)
-        else:
-            raise ValueError('Invalid gradient descent method.')
-
     def predict(self, input_vectors):
         """
         Predicts the output for the given input data.
@@ -38,34 +29,32 @@ class NeuralNetwork:
             propagated_input = sigmoid(w + W.dot(propagated_input))
         return propagated_input
 
-    def _standard_gradient_descent(self, input_vectors, output_vectors, num_iterations, alpha):
+    def get_weights(self):
         """
-        Performs standard gradient descent.
+        Flattens the weight matrices to produce a single vector.
 
-        :param input_vectors: the input vectors
-        :param output_vectors: the output vectors
-        :param num_iterations: the number of training iterations
-        :param alpha: the learning rate
+        :return: the weights as a flattened matrix (vector)
         """
-        for _ in range(num_iterations):
-            gradient_sum = sum([self._get_gradient(in_example, out_example)
-                                for in_example, out_example in zip(input_vectors, output_vectors)])
-            self._set_weights(self._get_flattened_weights() - alpha * gradient_sum)
+        flattened_weights = np.array([])
+        for w, W in zip(self._bias_weights, self._weights):
+            flattened_weights = np.append(flattened_weights, w)
+            flattened_weights = np.append(flattened_weights, W)
+        return flattened_weights
 
-    def _stochastic_gradient_descent(self, input_vectors, output_vectors, num_iterations, alpha):
+    def set_weights(self, flattened_weights):
         """
-        Performs stochastic gradient descent.
+        Updates the weight matrices based on a flattened vector.
 
-        :param input_vectors: the input vectors
-        :param output_vectors: the output vectors
-        :param num_iterations: the number of training iterations
-        :param alpha: the learning rate
+        :param flattened_weights: the flattened weight vector
         """
-        for _ in range(num_iterations):
-            for in_example, out_example in zip(input_vectors, output_vectors):
-                self._set_weights(self._get_flattened_weights() - alpha * self._get_gradient(in_example, out_example))
+        index = 0
+        for w, W in zip(self._bias_weights, self._weights):
+            w[:] = np.reshape(flattened_weights[index:index + w.size], w.shape)
+            index += w.size
+            W[:] = np.reshape(flattened_weights[index:index + W.size], W.shape)
+            index += W.size
 
-    def _get_gradient(self, input_vector, expected_output_vector):
+    def get_gradient(self, input_vector, expected_output_vector):
         """
         Computes the gradient of the L2 loss with respect to the weight vector for the given training example input
         and output.
@@ -98,31 +87,6 @@ class NeuralNetwork:
             flattened_gradient = np.append(flattened_gradient, bias_gradient)
             flattened_gradient = np.append(flattened_gradient, gradient)
         return flattened_gradient
-
-    def _get_flattened_weights(self):
-        """
-        Flattens the weight matrices to produce a single vector.
-
-        :return: the weights as a flattened matrix (vector)
-        """
-        flattened_weights = np.array([])
-        for w, W in zip(self._bias_weights, self._weights):
-            flattened_weights = np.append(flattened_weights, w)
-            flattened_weights = np.append(flattened_weights, W)
-        return flattened_weights
-
-    def _set_weights(self, flattened_weights):
-        """
-        Updates the weight matrices based on a flattened vector.
-
-        :param flattened_weights: the flattened weight vector
-        """
-        index = 0
-        for w, W in zip(self._bias_weights, self._weights):
-            w[:] = np.reshape(flattened_weights[index:index + w.size], w.shape)
-            index += w.size
-            W[:] = np.reshape(flattened_weights[index:index + W.size], W.shape)
-            index += W.size
 
 
 def sigmoid(x):
