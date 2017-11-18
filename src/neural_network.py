@@ -90,7 +90,7 @@ class NeuralNetwork:
         gradients[self.num_layers - 2] = - delta.dot(outputs[self.num_layers - 2].transpose())
         for i in range(self.num_layers - 3, -1, -1):
             delta = sigmoid_prime(outputs[i + 1]) * ((self._weights[i + 1].transpose()).dot(delta))
-            bias_gradients[i] = -delta
+            bias_gradients[i] = - delta
             gradients[i] = - delta.dot(outputs[i].transpose())
 
         flattened_gradient = np.array([])
@@ -119,13 +119,10 @@ class NeuralNetwork:
         """
         index = 0
         for w, W in zip(self._bias_weights, self._weights):
-            for i in range(w.size):
-                w[i] = flattened_weights[index]
-                index += 1
-            for i in range(W.size):
-                weight_index = np.unravel_index([i], W.shape)
-                W[weight_index] = flattened_weights[index]
-                index += 1
+            w[:] = np.reshape(flattened_weights[index:index + w.size], w.shape)
+            index += w.size
+            W[:] = np.reshape(flattened_weights[index:index + W.size], W.shape)
+            index += W.size
 
 
 def sigmoid(x):
