@@ -14,8 +14,8 @@ class NeuralNetwork(object):
         self._bias_weights = []
         self._weights = []
         for i in range(1, self._num_layers):
-            self._bias_weights.append(np.random.uniform(-1, 1, (layer_sizes[i], 1)))
-            self._weights.append(np.random.uniform(-1, 1, (layer_sizes[i], layer_sizes[i - 1])))
+            self._bias_weights.append(np.random.uniform(-0.05, 0.05, (layer_sizes[i], 1)))
+            self._weights.append(np.random.uniform(-0.05, 0.05, (layer_sizes[i], layer_sizes[i - 1])))
 
     def predict(self, input_vectors):
         """
