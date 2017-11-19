@@ -3,19 +3,26 @@ import numpy as np
 
 class NeuralNetwork(object):
     def __init__(self, layer_sizes):
-        self._num_layers = len(layer_sizes)
+        self._layer_sizes = layer_sizes
+        self._num_layers = len(self._layer_sizes)
         if self._num_layers <= 0:
             raise ValueError('Neural network must have at least one layer.')
 
-        for layer_size in layer_sizes:
+        for layer_size in self._layer_sizes:
             if layer_size <= 0:
                 raise ValueError('Neural network layers must have at least one neuron.')
 
-        self._bias_weights = []
-        self._weights = []
+        self._bias_weights = [np.array([]) for _ in range(self._num_layers - 1)]
+        self._weights = [np.array([]) for _ in range(self._num_layers - 1)]
+        self.reset_weights()
+
+    def reset_weights(self):
+        """
+        Resets the weights to small values.
+        """
         for i in range(1, self._num_layers):
-            self._bias_weights.append(np.random.uniform(-0.05, 0.05, (layer_sizes[i], 1)))
-            self._weights.append(np.random.uniform(-0.05, 0.05, (layer_sizes[i], layer_sizes[i - 1])))
+            self._bias_weights[i - 1] = np.random.uniform(-0.05, 0.05, (self._layer_sizes[i], 1))
+            self._weights[i - 1] = np.random.uniform(-0.05, 0.05, (self._layer_sizes[i], self._layer_sizes[i - 1]))
 
     def predict(self, input_vectors):
         """

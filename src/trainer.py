@@ -1,3 +1,5 @@
+from __future__ import division
+
 import numpy as np
 
 from scipy import optimize
@@ -20,6 +22,34 @@ class Trainer(object):
             self._bfgs(input_vectors, output_vectors)
         else:
             raise ValueError('Invalid gradient descent method')
+
+    def k_fold_cross_validation(self, input_vectors, output_vectors, k=10, method='stochastic', num_iterations=1000,
+                                alpha=0.1):
+        if k > len(input_vectors) or k > len(output_vectors):
+            raise ValueError('k cannot be greater than the total number of input/output vector pairs.')
+
+        if len(input_vectors) != len(output_vectors):
+            raise ValueError('Must have same number of input and output vectors.')
+
+        losses = []
+        index_offset = int(round(len(input_vectors) / k))
+        for i in range(k):
+            # Split training/testing data
+            test_start_index = i * index_offset
+            test_end_index = (i + 1) * index_offset if i < k - 1 else len(input_vectors)
+            train_input = np.vstack((input_vectors[:test_start_index], input_vectors[test_end_index:]))
+            train_output = np.vstack((output_vectors[:test_start_index], output_vectors[test_end_index:]))
+            test_input = input_vectors[test_start_index:test_end_index]
+            test_output = output_vectors[test_start_index:test_end_index]
+
+            # Train
+            self._nn.reset_weights()
+            self.train(train_input, train_output, method, num_iterations, alpha)
+
+            # Test
+            loss = self._nn.get_loss(test_input, test_output)
+            losses.append(loss)
+        return np.mean(losses)
 
     def _stochastic_gradient_descent(self, input_vectors, output_vectors,
                                      num_iterations, alpha):
