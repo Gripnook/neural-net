@@ -34,7 +34,7 @@ class NeuralNetwork(object):
         propagated_input = np.vstack(input_vectors).transpose()
         for bias_weight, weight in zip(self._bias_weights, self._weights):
             propagated_input = sigmoid(bias_weight + weight.dot(propagated_input))
-        return propagated_input.transpose()
+        return np.expand_dims(propagated_input.transpose(), 1)
 
     def get_weights(self):
         """
@@ -61,7 +61,7 @@ class NeuralNetwork(object):
         :param expected_output_vectors: the expected output data
         :return: the L2 loss
         """
-        return 0.5 * np.sum((np.vstack(expected_output_vectors) - self.predict(input_vectors)) ** 2)
+        return 0.5 * np.sum((np.array(expected_output_vectors) - self.predict(input_vectors)) ** 2)
 
     def get_gradient(self, input_vector, expected_output_vector):
         """
