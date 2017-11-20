@@ -40,8 +40,8 @@ def test_mnist_one_hot(num_train_examples=1000, num_test_examples=100):
         trainer.train(train_input, train_output, method='stochastic', num_iterations=10)
         logging.info('MNIST training prediction rate: {}'.format(get_prediction_rate(nn, train_input, train_output)))
         logging.info('MNIST test prediction rate: {}'.format(get_prediction_rate(nn, test_input, test_output)))
-        logging.info('MNIST training L2 loss: {}'.format(nn.get_loss(train_input, train_output) / num_train_examples))
-        logging.info('MNIST test L2 loss: {}'.format(nn.get_loss(test_input, test_output) / num_test_examples))
+        logging.info('MNIST training L2 loss: {}'.format(nn.get_loss(train_input, train_output) / train_input.shape[0]))
+        logging.info('MNIST test L2 loss: {}'.format(nn.get_loss(test_input, test_output) / test_input.shape[0]))
 
 
 def convert_mnist_images(images):
