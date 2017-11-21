@@ -56,3 +56,6 @@ build
 
 # PyCharm
 .idea
+
+# Large data files
+data
