@@ -33,7 +33,7 @@ class NeuralNetwork(object):
         """
         propagated_input = np.vstack(input_vectors).transpose()
         for bias_weight, weight in zip(self._bias_weights, self._weights):
-            propagated_input = sigmoid(bias_weight + weight.dot(propagated_input))
+            propagated_input = tanh_sigmoid(bias_weight + weight.dot(propagated_input))
         return np.expand_dims(propagated_input.transpose(), 1)
 
     def get_weights(self):
@@ -78,16 +78,16 @@ class NeuralNetwork(object):
         # Forward propagation.
         propagated_input = outputs[0]
         for bias_weight, weight in zip(self._bias_weights, self._weights):
-            propagated_input = sigmoid(bias_weight + weight.dot(propagated_input))
+            propagated_input = tanh_sigmoid(bias_weight + weight.dot(propagated_input))
             outputs.append(propagated_input)
 
         # Backward propagation.
-        delta = sigmoid_prime(outputs[self._num_layers - 1]) * (
+        delta = tanh_sigmoid_prime(outputs[self._num_layers - 1]) * (
             expected_output_vector.transpose() - outputs[self._num_layers - 1])
         bias_gradients[self._num_layers - 2] = -delta
         gradients[self._num_layers - 2] = -delta.dot(outputs[self._num_layers - 2].transpose())
         for i in range(self._num_layers - 3, -1, -1):
-            delta = sigmoid_prime(outputs[i + 1]) * ((self._weights[i + 1].transpose()).dot(delta))
+            delta = tanh_sigmoid_prime(outputs[i + 1]) * ((self._weights[i + 1].transpose()).dot(delta))
             bias_gradients[i] = -delta
             gradients[i] = -delta.dot(outputs[i].transpose())
 
@@ -112,3 +112,23 @@ def sigmoid_prime(y):
     :return: the derivative at the given y value
     """
     return y * (1 - y)
+
+
+def tanh_sigmoid(x):
+    """
+    Computes the tanh sigmoid function at the given x value.
+
+    :param x: the x value
+    :return: the tanh sigmoid function at the given x value
+    """
+    return 1.7159 * np.tanh(2 * x / 3)
+
+
+def tanh_sigmoid_prime(y):
+    """
+    Computes the derivative of the tanh sigmoid function at the given value of y = f(x).
+
+    :param y: the value of the tanh sigmoid function
+    :return: the derivative at the given y value
+    """
+    return 2 * (1.7159 - (y ** 2) / 1.7159) / 3

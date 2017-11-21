@@ -25,7 +25,7 @@ def test_mnist(num_train_examples=100, num_test_examples=100):
     logging.info('MNIST L2 loss: {}'.format(nn.get_loss(test_input, test_output)))
 
 
-def test_mnist_one_hot(num_train_examples=1000, num_test_examples=100):
+def test_mnist_one_hot(num_train_examples=-1, num_test_examples=-1):
     logging.info('Loading MNIST data.')
     train_input = convert_mnist_images(mnist.train_images()[:num_train_examples])
     train_output = convert_mnist_labels_one_hot(mnist.train_labels()[:num_train_examples])
@@ -61,14 +61,14 @@ def convert_mnist_labels(labels):
 def convert_mnist_labels_one_hot(labels):
     lst = []
     for label in labels:
-        label_one_hot = 0.1 * np.ones(10)
-        label_one_hot[label] = 0.9
+        label_one_hot = -1 * np.ones(10)
+        label_one_hot[label] = 1
         lst.append(np.array([label_one_hot]))
     return np.array(lst)
 
 
 def normalize(data):
-    return data / 255.0
+    return 2 * (data / 255.0) - 1
 
 
 def get_prediction_rate(nn, test_input, test_output):

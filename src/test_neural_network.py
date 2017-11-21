@@ -33,7 +33,7 @@ class TestNeuralNetwork(unittest.TestCase):
         self.nn.set_weights(deepcopy(self.weights))
         gradient = self.nn.get_gradient(self.input_vector, self.output_vector)
         approx_gradient = self._get_approx_gradient(i, j, k)
-        self.assertAlmostEqual(gradient[i][j, k], approx_gradient)
+        self.assertAlmostEqual(gradient[i][j, k], approx_gradient, 6)  # 6 decimal places
 
     def _get_approx_gradient(self, i, j, k):
         epsilon = 0.001
