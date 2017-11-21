@@ -23,14 +23,15 @@ class TestTrainer(unittest.TestCase):
         method = 'stochastic'
         num_iterations = 100
         alpha = 0.1
+        momentum = 0.1
         self.trainer._stochastic_gradient_descent = MagicMock()
 
         # when
-        self.trainer.train(input_vectors, output_vectors, method, num_iterations, alpha)
+        self.trainer.train(input_vectors, output_vectors, method, num_iterations, alpha, momentum)
 
         # then
         self.trainer._stochastic_gradient_descent.assert_called_with(input_vectors, output_vectors,
-                                                                     num_iterations, alpha)
+                                                                     num_iterations, alpha, momentum)
 
     def test_train_standard(self):
         # given
