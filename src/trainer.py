@@ -11,20 +11,20 @@ class Trainer(object):
         self._nn = nn
 
     def train(self, input_vectors, output_vectors, method='stochastic',
-              num_iterations=1000, alpha=0.1):
+              num_iterations=1000, learning_rate=0.1, momentum=0.1):
         if method is 'stochastic':
             self._stochastic_gradient_descent(input_vectors, output_vectors,
-                                              num_iterations, alpha)
+                                              num_iterations, learning_rate, momentum)
         elif method is 'standard':
             self._standard_gradient_descent(input_vectors, output_vectors,
-                                            num_iterations, alpha)
+                                            num_iterations, learning_rate)
         elif method is 'BFGS':
             self._bfgs(input_vectors, output_vectors)
         else:
             raise ValueError('Invalid gradient descent method')
 
     def k_fold_cross_validation(self, input_vectors, output_vectors, k=10, method='stochastic', num_iterations=1000,
-                                alpha=0.1):
+                                learning_rate=0.1):
         if k > len(input_vectors) or k > len(output_vectors):
             raise ValueError('k cannot be greater than the total number of input/output vector pairs.')
 
@@ -44,7 +44,7 @@ class Trainer(object):
 
             # Train
             self._nn.reset_weights()
-            self.train(train_input, train_output, method, num_iterations, alpha)
+            self.train(train_input, train_output, method, num_iterations, learning_rate)
 
             # Test
             loss = self._nn.get_loss(test_input, test_output)
@@ -52,17 +52,21 @@ class Trainer(object):
         return np.mean(losses)
 
     def _stochastic_gradient_descent(self, input_vectors, output_vectors,
-                                     num_iterations, alpha):
+                                     num_iterations, learning_rate, momentum):
+        delta_weights = []
+        for weight in self._nn.get_weights():
+            delta_weights.append(np.zeros(weight.shape))
         for _ in range(num_iterations):
             for input_vector, output_vector in zip(input_vectors, output_vectors):
                 weights = self._nn.get_weights()
                 gradients = self._nn.get_gradient(input_vector, output_vector)
-                for weight, gradient in zip(weights, gradients):
-                    weight -= alpha * gradient
+                for i, (weight, gradient) in enumerate(zip(weights, gradients)):
+                    delta_weights[i] = -learning_rate * gradient + momentum * delta_weights[i]
+                    weight += delta_weights[i]
                 self._nn.set_weights(weights)
 
     def _standard_gradient_descent(self, input_vectors, output_vectors,
-                                   num_iterations, alpha):
+                                   num_iterations, learning_rate):
         for _ in range(num_iterations):
             weights = self._nn.get_weights()
             total_gradients = [np.zeros(weight.shape) for weight in weights]
@@ -71,7 +75,7 @@ class Trainer(object):
                 for gradient, total_gradient in zip(gradients, total_gradients):
                     total_gradient += gradient
             for weight, total_gradient in zip(weights, total_gradients):
-                weight -= alpha * total_gradient
+                weight -= learning_rate * total_gradient
             self._nn.set_weights(weights)
 
     def _bfgs(self, input_vectors, output_vectors):
