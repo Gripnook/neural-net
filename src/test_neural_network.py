@@ -8,12 +8,6 @@ from neural_network import NeuralNetwork
 
 
 class TestNeuralNetwork(unittest.TestCase):
-    def test_nn_with_logistic_sigmoid_has_correct_loss_for_single_example(self):
-        nn = NeuralNetwork((2, 5, 1), sigmoid='logistic')
-        input_vector = np.array([[1, 1]])
-        output_vector = np.array([[2]])
-        self._test_loss(nn, input_vector, output_vector)
-
     def test_nn_with_single_layer_predicts_the_input_for_1D_array(self):
         nn = NeuralNetwork((3,))
         input_vector = np.array([[1, 1, 2]])
@@ -28,6 +22,12 @@ class TestNeuralNetwork(unittest.TestCase):
         nn = NeuralNetwork((3,))
         input_vectors = np.array([[[1, 1, 2]], [[2, 0, 1]]])
         self.assertTrue(np.all(nn.predict(input_vectors) == input_vectors))
+
+    def test_nn_with_logistic_sigmoid_has_correct_loss_for_single_example(self):
+        nn = NeuralNetwork((2, 5, 1), sigmoid='logistic')
+        input_vector = np.array([[1, 1]])
+        output_vector = np.array([[2]])
+        self._test_loss(nn, input_vector, output_vector)
 
     def test_nn_with_logistic_sigmoid_has_correct_loss_for_multiple_examples(self):
         nn = NeuralNetwork((2, 5, 1), sigmoid='logistic')
