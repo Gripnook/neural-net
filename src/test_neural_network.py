@@ -14,6 +14,21 @@ class TestNeuralNetwork(unittest.TestCase):
         output_vector = np.array([[2]])
         self._test_loss(nn, input_vector, output_vector)
 
+    def test_nn_with_single_layer_predicts_the_input_for_1D_array(self):
+        nn = NeuralNetwork((3,))
+        input_vector = np.array([[1, 1, 2]])
+        self.assertTrue(np.all(nn.predict(input_vector) == input_vector))
+
+    def test_nn_with_single_layer_predicts_the_input_for_2D_array(self):
+        nn = NeuralNetwork((3,))
+        input_vectors = np.array([[1, 1, 2], [2, 0, 1]])
+        self.assertTrue(np.all(nn.predict(input_vectors) == input_vectors))
+
+    def test_nn_with_single_layer_predicts_the_input_for_3D_array(self):
+        nn = NeuralNetwork((3,))
+        input_vectors = np.array([[[1, 1, 2]], [[2, 0, 1]]])
+        self.assertTrue(np.all(nn.predict(input_vectors) == input_vectors))
+
     def test_nn_with_logistic_sigmoid_has_correct_loss_for_multiple_examples(self):
         nn = NeuralNetwork((2, 5, 1), sigmoid='logistic')
         input_vectors = np.array([[[1, 1]], [[-1, 2]]])
@@ -70,12 +85,11 @@ class TestNeuralNetwork(unittest.TestCase):
         for layer in range(len(weights)):
             for row in range(weights[layer].shape[0]):
                 for col in range(weights[layer].shape[1]):
-                    gradient = nn.get_gradient(input_vectors, output_vectors)
+                    gradient = nn.get_loss_gradient(input_vectors, output_vectors)
                     approx_gradient = self._get_approx_gradient(nn, input_vectors, output_vectors, layer, row, col)
                     self.assertAlmostEqual(gradient[layer][row, col], approx_gradient)
 
-    def _get_approx_gradient(self, nn, input_vectors, output_vectors, layer, row, col):
-        epsilon = 1e-6
+    def _get_approx_gradient(self, nn, input_vectors, output_vectors, layer, row, col, epsilon=1e-6):
         saved_weights = nn.get_weights()
         weights = deepcopy(saved_weights)
         weights[layer][row, col] += epsilon
