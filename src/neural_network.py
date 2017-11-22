@@ -72,17 +72,17 @@ class NeuralNetwork(object):
         """
         return 0.5 * np.sum((np.array(expected_output_vectors) - self.predict(input_vectors)) ** 2)
 
-    def get_gradient(self, input_vector, expected_output_vector):
+    def get_gradient(self, input_vectors, expected_output_vectors):
         """
         Computes the gradient of the L2 loss with respect to the weights for the given training example.
 
-        :param input_vector: the input data
-        :param expected_output_vector: the expected output data
+        :param input_vectors: the input data
+        :param expected_output_vectors: the expected output data
         :return: the gradient of the L2 loss as a list of matrices
         """
         bias_gradients = [np.array([]) for _ in range(self._num_layers - 1)]
         gradients = [np.array([]) for _ in range(self._num_layers - 1)]
-        outputs = [input_vector.transpose()]
+        outputs = [np.vstack(input_vectors).transpose()]
 
         # Forward propagation.
         propagated_input = outputs[0]
@@ -92,14 +92,13 @@ class NeuralNetwork(object):
 
         # Backward propagation.
         delta = self._sigmoid_prime(outputs[self._num_layers - 1]) * (
-            expected_output_vector.transpose() - outputs[self._num_layers - 1])
-        bias_gradients[self._num_layers - 2] = -delta
+            np.vstack(expected_output_vectors).transpose() - outputs[self._num_layers - 1])
+        bias_gradients[self._num_layers - 2] = -np.sum(delta, 1).reshape(-1, 1)
         gradients[self._num_layers - 2] = -delta.dot(outputs[self._num_layers - 2].transpose())
         for i in range(self._num_layers - 3, -1, -1):
             delta = self._sigmoid_prime(outputs[i + 1]) * ((self._weights[i + 1].transpose()).dot(delta))
-            bias_gradients[i] = -delta
+            bias_gradients[i] = -np.sum(delta, 1).reshape(-1, 1)
             gradients[i] = -delta.dot(outputs[i].transpose())
-
         return bias_gradients + gradients
 
 
