@@ -121,7 +121,7 @@ def tanh_sigmoid(x):
     :param x: the x value
     :return: the tanh sigmoid function at the given x value
     """
-    return 1.7159 * np.tanh(2 * x / 3)
+    return 1.7159 * np.tanh(2.0 * x / 3.0)
 
 
 def tanh_sigmoid_prime(y):
@@ -131,4 +131,4 @@ def tanh_sigmoid_prime(y):
     :param y: the value of the tanh sigmoid function
     :return: the derivative at the given y value
     """
-    return 2 * (1.7159 - (y ** 2) / 1.7159) / 3
+    return 2.0 * (1.7159 - (y ** 2) / 1.7159) / 3.0

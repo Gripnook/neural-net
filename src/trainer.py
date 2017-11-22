@@ -1,5 +1,7 @@
 from __future__ import division
 
+import logging
+import random
 import numpy as np
 
 from scipy import optimize
@@ -11,10 +13,10 @@ class Trainer(object):
         self._nn = nn
 
     def train(self, input_vectors, output_vectors, method='stochastic',
-              num_iterations=1000, learning_rate=0.1, momentum=0.1):
+              num_iterations=1000, learning_rate=0.1, momentum=0.1, callback=lambda iteration: None):
         if method is 'stochastic':
             self._stochastic_gradient_descent(input_vectors, output_vectors,
-                                              num_iterations, learning_rate, momentum)
+                                              num_iterations, learning_rate, momentum, callback)
         elif method is 'standard':
             self._standard_gradient_descent(input_vectors, output_vectors,
                                             num_iterations, learning_rate)
@@ -52,18 +54,20 @@ class Trainer(object):
         return np.mean(losses)
 
     def _stochastic_gradient_descent(self, input_vectors, output_vectors,
-                                     num_iterations, learning_rate, momentum):
+                                     num_iterations, learning_rate, momentum, callback):
         delta_weights = []
         for weight in self._nn.get_weights():
             delta_weights.append(np.zeros(weight.shape))
-        for _ in range(num_iterations):
-            for input_vector, output_vector in zip(input_vectors, output_vectors):
-                weights = self._nn.get_weights()
-                gradients = self._nn.get_gradient(input_vector, output_vector)
-                for i, (weight, gradient) in enumerate(zip(weights, gradients)):
-                    delta_weights[i] = -learning_rate * gradient + momentum * delta_weights[i]
-                    weight += delta_weights[i]
-                self._nn.set_weights(weights)
+        inputs_outputs = zip(input_vectors, output_vectors)
+        for iteration in range(num_iterations):
+            input_vector, output_vector = random.choice(inputs_outputs)
+            weights = self._nn.get_weights()
+            gradients = self._nn.get_gradient(input_vector, output_vector)
+            for delta_weight, weight, gradient in zip(delta_weights, weights, gradients):
+                delta_weight[:] = -learning_rate * gradient + momentum * delta_weight
+                weight += delta_weight
+            self._nn.set_weights(weights)
+            callback(iteration)
 
     def _standard_gradient_descent(self, input_vectors, output_vectors,
                                    num_iterations, learning_rate):

@@ -26,6 +26,7 @@ def test_mnist(num_train_examples=100, num_test_examples=100):
 
 
 def test_mnist_one_hot(num_train_examples=-1, num_test_examples=-1):
+
     logging.info('Loading MNIST data.')
     train_input = convert_mnist_images(mnist.train_images()[:num_train_examples])
     train_output = convert_mnist_labels_one_hot(mnist.train_labels()[:num_train_examples])
@@ -35,13 +36,19 @@ def test_mnist_one_hot(num_train_examples=-1, num_test_examples=-1):
 
     nn = NeuralNetwork((784, 76, 24, 10))
     trainer = Trainer(nn)
+
+    def callback(iteration):
+        if iteration % 1000 == 0:
+            training_prediction_rate = get_prediction_rate(nn, train_input, train_output)
+            test_prediction_rate = get_prediction_rate(nn, test_input, test_output)
+            training_loss = nn.get_loss(train_input, train_output) / train_input.shape[0]
+            test_loss = nn.get_loss(test_input, test_output) / test_input.shape[0]
+            print('{:.6f},{:.6f},{:.6f},{:.6f}'.format(training_prediction_rate, test_prediction_rate, training_loss, test_loss))
+
     logging.info('MNIST training started.')
-    for _ in range(100):
-        trainer.train(train_input, train_output, method='stochastic', num_iterations=10)
-        logging.info('MNIST training prediction rate: {}'.format(get_prediction_rate(nn, train_input, train_output)))
-        logging.info('MNIST test prediction rate: {}'.format(get_prediction_rate(nn, test_input, test_output)))
-        logging.info('MNIST training L2 loss: {}'.format(nn.get_loss(train_input, train_output) / train_input.shape[0]))
-        logging.info('MNIST test L2 loss: {}'.format(nn.get_loss(test_input, test_output) / test_input.shape[0]))
+    print('')
+    trainer.train(train_input, train_output, method='stochastic', num_iterations=10000000, momentum=0,
+                  callback=callback)
 
 
 def convert_mnist_images(images):
