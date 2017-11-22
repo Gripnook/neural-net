@@ -43,11 +43,11 @@ def test_mnist_one_hot(num_train_examples=-1, num_test_examples=-1):
             test_prediction_rate = get_prediction_rate(nn, test_input, test_output)
             training_loss = nn.get_loss(train_input, train_output) / train_input.shape[0]
             test_loss = nn.get_loss(test_input, test_output) / test_input.shape[0]
-            print('{:.6f},{:.6f},{:.6f},{:.6f}'.format(training_prediction_rate, test_prediction_rate, training_loss, test_loss))
+            print('{},{:.6f},{:.6f},{:.6f},{:.6f}'.format(iteration,training_prediction_rate, test_prediction_rate, training_loss, test_loss))
 
     logging.info('MNIST training started.')
-    trainer.train(train_input, train_output, method='stochastic'
-                  num_iterations=10000000, learning_rate=0.0125, momentum=0.0, callback=callback)
+    trainer.train(train_input, train_output, method='stochastic',
+                  num_iterations=10000000, learning_rate=0.1, momentum=0.0, callback=callback)
 
 
 def convert_mnist_images(images):
