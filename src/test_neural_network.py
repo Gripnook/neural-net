@@ -8,43 +8,84 @@ from neural_network import NeuralNetwork
 
 
 class TestNeuralNetwork(unittest.TestCase):
-    def setUp(self):
-        self.nn = NeuralNetwork((2, 5, 1))
-        self.weights = deepcopy(self.nn.get_weights())
-        self.input_vector = np.array([[1, 1]])
-        self.output_vector = np.array([[2]])
+    def test_nn_with_logistic_sigmoid_has_correct_loss_for_single_example(self):
+        nn = NeuralNetwork((2, 5, 1), sigmoid='logistic')
+        input_vector = np.array([[1, 1]])
+        output_vector = np.array([[2]])
+        self._test_loss(nn, input_vector, output_vector)
 
-    def test_predict(self):
-        pass
+    def test_nn_with_logistic_sigmoid_has_correct_loss_for_multiple_examples(self):
+        nn = NeuralNetwork((2, 5, 1), sigmoid='logistic')
+        input_vectors = np.array([[[1, 1]], [[-1, 2]]])
+        output_vectors = np.array([[[2]], [[5]]])
+        self._test_loss(nn, input_vectors, output_vectors)
 
-    def test_get_weights(self):
-        pass
+    def test_nn_with_tanh_sigmoid_has_correct_loss_for_single_example(self):
+        nn = NeuralNetwork((2, 5, 1), sigmoid='tanh')
+        input_vector = np.array([[1, 1]])
+        output_vector = np.array([[2]])
+        self._test_loss(nn, input_vector, output_vector)
 
-    def test_set_weights(self):
-        pass
+    def test_nn_with_tanh_sigmoid_has_correct_loss_for_multiple_examples(self):
+        nn = NeuralNetwork((2, 5, 1), sigmoid='tanh')
+        input_vectors = np.array([[[1, 1]], [[-1, 2]]])
+        output_vectors = np.array([[[2]], [[5]]])
+        self._test_loss(nn, input_vectors, output_vectors)
 
-    def test_get_gradient(self):
-        for i in range(len(self.weights)):
-            for j in range(self.weights[i].shape[0]):
-                for k in range(self.weights[i].shape[1]):
-                    self._test_get_gradient(i, j, k)
+    def test_nn_with_logistic_sigmoid_has_correct_loss_gradient_for_single_example(self):
+        nn = NeuralNetwork((2, 5, 1), sigmoid='logistic')
+        input_vector = np.array([[1, 1]])
+        output_vector = np.array([[2]])
+        self._test_gradient(nn, input_vector, output_vector)
 
-    def _test_get_gradient(self, i, j, k):
-        self.nn.set_weights(deepcopy(self.weights))
-        gradient = self.nn.get_gradient(self.input_vector, self.output_vector)
-        approx_gradient = self._get_approx_gradient(i, j, k)
-        self.assertAlmostEqual(gradient[i][j, k], approx_gradient, 6)  # 6 decimal places
+    def test_nn_with_logistic_sigmoid_has_correct_loss_gradient_for_multiple_examples(self):
+        nn = NeuralNetwork((2, 5, 1), sigmoid='logistic')
+        input_vectors = np.array([[[1, 1]], [[-1, 2]]])
+        output_vectors = np.array([[[2]], [[5]]])
+        self._test_gradient(nn, input_vectors, output_vectors)
 
-    def _get_approx_gradient(self, i, j, k):
-        epsilon = 0.001
-        weights = deepcopy(self.weights)
-        weights[i][j, k] += epsilon
-        self.nn.set_weights(weights)
-        loss1 = self.nn.get_loss([self.input_vector], [self.output_vector])
-        weights = deepcopy(self.weights)
-        weights[i][j, k] -= epsilon
-        self.nn.set_weights(weights)
-        loss2 = self.nn.get_loss([self.input_vector], [self.output_vector])
+    def test_nn_with_tanh_sigmoid_has_correct_loss_gradient_for_single_example(self):
+        nn = NeuralNetwork((2, 5, 1), sigmoid='tanh')
+        input_vector = np.array([[1, 1]])
+        output_vector = np.array([[2]])
+        self._test_gradient(nn, input_vector, output_vector)
+
+    def test_nn_with_tanh_sigmoid_has_correct_loss_gradient_for_multiple_examples(self):
+        nn = NeuralNetwork((2, 5, 1), sigmoid='tanh')
+        input_vectors = np.array([[[1, 1]], [[-1, 2]]])
+        output_vectors = np.array([[[2]], [[5]]])
+        self._test_gradient(nn, input_vectors, output_vectors)
+
+    def test_nn_with_invalid_sigmoid_throws_error(self):
+        with self.assertRaises(ValueError):
+            nn = NeuralNetwork((2, 5, 1), sigmoid='invalid')
+
+    def _test_loss(self, nn, input_vectors, output_vectors):
+        prediction = nn.predict(input_vectors)
+        self.assertAlmostEqual(nn.get_loss(input_vectors, output_vectors),
+                               0.5 * sum((output_vectors - prediction) ** 2))
+
+    def _test_gradient(self, nn, input_vectors, output_vectors):
+        weights = nn.get_weights()
+        for layer in range(len(weights)):
+            for row in range(weights[layer].shape[0]):
+                for col in range(weights[layer].shape[1]):
+                    gradient = nn.get_gradient(input_vectors, output_vectors)
+                    approx_gradient = self._get_approx_gradient(nn, input_vectors, output_vectors, layer, row, col)
+                    self.assertAlmostEqual(gradient[layer][row, col], approx_gradient)
+
+    def _get_approx_gradient(self, nn, input_vectors, output_vectors, layer, row, col):
+        epsilon = 1e-6
+        saved_weights = nn.get_weights()
+        weights = deepcopy(saved_weights)
+        weights[layer][row, col] += epsilon
+        nn.set_weights(weights)
+        loss1 = nn.get_loss(input_vectors, output_vectors)
+        weights = deepcopy(saved_weights)
+        weights[layer][row, col] -= epsilon
+        nn.set_weights(weights)
+        loss2 = nn.get_loss(input_vectors, output_vectors)
+        nn.set_weights(saved_weights)
         return (loss1 - loss2) / (2 * epsilon)
 
 
