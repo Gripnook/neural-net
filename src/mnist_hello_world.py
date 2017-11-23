@@ -24,8 +24,8 @@ def test_mnist_one_hot(num_train_examples=-1, num_test_examples=-1):
         if iteration % 1000 == 0:
             training_prediction_rate = get_prediction_rate(nn, train_input, train_output)
             test_prediction_rate = get_prediction_rate(nn, test_input, test_output)
-            training_loss = nn.get_loss(train_input, train_output) / train_input.shape[0]
-            test_loss = nn.get_loss(test_input, test_output) / test_input.shape[0]
+            training_loss = nn.get_loss(train_input, train_output)
+            test_loss = nn.get_loss(test_input, test_output)
             print('{},{:.6f},{:.6f},{:.6f},{:.6f}'.format(iteration, training_prediction_rate, test_prediction_rate,
                                                           training_loss, test_loss))
 

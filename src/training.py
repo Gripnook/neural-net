@@ -11,9 +11,6 @@ def stochastic_gradient_descent(nn, input_vectors, output_vectors, num_iteration
     with the given training examples.
     """
 
-    # Scale the learning rate according to the batch size.
-    learning_rate /= batch_size
-
     delta_weights = [np.zeros(weight.shape) for weight in nn.get_weights()]
     for iteration in range(num_iterations):
         # Get a random batch of examples.
@@ -39,9 +36,6 @@ def batch_gradient_descent(nn, input_vectors, output_vectors, num_iterations=100
     Trains the neural network by using standard batch gradient
     descent with the given training examples.
     """
-
-    # Scale the learning rate according to the input size.
-    learning_rate /= input_vectors.shape[0]
 
     delta_weights = [np.zeros(weight.shape) for weight in nn.get_weights()]
     for iteration in range(num_iterations):

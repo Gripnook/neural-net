@@ -33,6 +33,6 @@ def k_fold_cross_validation(nn, k, input_vectors, output_vectors, train):
         train(nn, training_input, training_output)
 
         # Test the neural network with the test set.
-        loss = nn.get_loss(test_input, test_output) / test_input.shape[0]
+        loss = nn.get_loss(test_input, test_output)
         losses.append(loss)
     return np.mean(losses)

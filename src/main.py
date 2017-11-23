@@ -13,7 +13,7 @@ def test_stochastic_gradient_descent(nn, input_examples, output_examples):
     stochastic_gradient_descent(nn, input_examples, output_examples)
     prediction = nn.predict(input_examples)
     logging.info('Prediction for stochastic:\n{}'.format(prediction))
-    logging.info('L2 loss: {}'.format(nn.get_loss(input_examples, output_examples) / input_examples.shape[0]))
+    logging.info('L2 loss: {}'.format(nn.get_loss(input_examples, output_examples)))
 
 
 def test_batch_gradient_descent(nn, input_examples, output_examples):
@@ -21,7 +21,7 @@ def test_batch_gradient_descent(nn, input_examples, output_examples):
     batch_gradient_descent(nn, input_examples, output_examples)
     prediction = nn.predict(input_examples)
     logging.info('Prediction for batch:\n{}'.format(prediction))
-    logging.info('L2 loss: {}'.format(nn.get_loss(input_examples, output_examples) / input_examples.shape[0]))
+    logging.info('L2 loss: {}'.format(nn.get_loss(input_examples, output_examples)))
 
 
 def test_k_fold(nn, input_examples, output_examples, k):

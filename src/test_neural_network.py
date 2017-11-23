@@ -91,7 +91,7 @@ class TestNeuralNetwork(unittest.TestCase):
     def _test_loss(self, nn, input_vectors, output_vectors):
         prediction = nn.predict(input_vectors)
         self.assertAlmostEqual(nn.get_loss(input_vectors, output_vectors),
-                               0.5 * sum((output_vectors - prediction) ** 2))
+                               0.5 * np.sum((output_vectors - prediction) ** 2) / prediction.shape[0])
 
     def _test_gradient(self, nn, input_vectors, output_vectors):
         weights = nn.get_weights()
