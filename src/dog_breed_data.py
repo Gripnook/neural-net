@@ -42,18 +42,22 @@ def get_training_data(num_examples=-1, positive=1, negative=-1):
             labels[row[0]] = row[1]
 
     data_path = 'data/train/'
-    files = [file for file in os.listdir(data_path) if isfile(join(data_path, file))]
+    files = [f for f in os.listdir(data_path) if isfile(join(data_path, f))]
     files = files[:num_examples]
 
     input_data = [np.array([]) for _ in files]
     output_data = [np.array([]) for _ in files]
-    for i, file in zip(range(len(files)), files):
-        input_data[i] = imageio.imread(join(data_path, file))
+    for i, f in zip(range(len(files)), files):
+        input_data[i] = imageio.imread(join(data_path, f))
         output_data[i] = negative * np.ones((1, len(classes)))
-        output_data[i][0, classes[labels[file.split('.')[0]]]] = positive
+        output_data[i][0, classes[labels[f.split('.')[0]]]] = positive
     return input_data, output_data
 
 
-if __name__ == '__main__':
+def main():
     input_data, output_data = get_training_data(num_examples=1)
     print input_data, output_data
+
+
+if __name__ == '__main__':
+    main()

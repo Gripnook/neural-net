@@ -25,10 +25,7 @@ def test_batch_gradient_descent(nn, input_examples, output_examples):
 
 
 def test_k_fold(nn, input_examples, output_examples, k):
-    def train(nn, input_examples, output_examples):
-        stochastic_gradient_descent(nn, input_examples, output_examples)
-
-    mean_loss = k_fold_cross_validation(nn, k, input_examples, output_examples, train)
+    mean_loss = k_fold_cross_validation(nn, k, input_examples, output_examples, stochastic_gradient_descent)
     logging.info('Mean L2 loss (k-fold, k={}): {}'.format(k, mean_loss))
 
 

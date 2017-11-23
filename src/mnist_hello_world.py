@@ -10,22 +10,6 @@ import logging
 from logging_setup import setup_logging
 
 
-# def test_mnist(num_train_examples=100, num_test_examples=100):
-#     logging.info('Loading MNIST data.')
-#     train_input = convert_mnist_images(mnist.train_images()[:num_train_examples])
-#     train_output = convert_mnist_labels(mnist.train_labels()[:num_train_examples])
-
-#     test_input = convert_mnist_images(mnist.test_images()[:num_test_examples])
-#     test_output = convert_mnist_labels(mnist.test_labels()[:num_test_examples])
-
-#     nn = NeuralNetwork((784, 10, 1))
-#     trainer = Trainer(nn)
-#     logging.info('MNIST training started.')
-#     trainer.train(train_input, train_output, method='stochastic')
-#     logging.info('MNIST testing started.')
-#     logging.info('MNIST L2 loss: {}'.format(nn.get_loss(test_input, test_output)))
-
-
 def test_mnist_one_hot(num_train_examples=-1, num_test_examples=-1):
     logging.info('Loading MNIST data.')
     train_input = convert_mnist_images(mnist.train_images()[:num_train_examples])
@@ -56,13 +40,6 @@ def convert_mnist_images(images):
     for image in images:
         lst.append(np.reshape(image, (1, image.size)))
     return normalize(np.array(lst))
-
-
-# def convert_mnist_labels(labels):
-#     lst = []
-#     for label in labels:
-#         lst.append(np.array([[label]]))
-#     return np.array(lst)
 
 
 def convert_mnist_labels_one_hot(labels):

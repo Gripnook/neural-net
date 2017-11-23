@@ -6,6 +6,20 @@ from copy import deepcopy
 from neural_network import NeuralNetwork
 
 
+def get_approx_gradient(nn, input_vectors, output_vectors, layer, row, col, epsilon=1e-6):
+    saved_weights = nn.get_weights()
+    weights = deepcopy(saved_weights)
+    weights[layer][row, col] += epsilon
+    nn.set_weights(weights)
+    loss1 = nn.get_loss(input_vectors, output_vectors)
+    weights = deepcopy(saved_weights)
+    weights[layer][row, col] -= epsilon
+    nn.set_weights(weights)
+    loss2 = nn.get_loss(input_vectors, output_vectors)
+    nn.set_weights(saved_weights)
+    return (loss1 - loss2) / (2 * epsilon)
+
+
 class TestNeuralNetwork(unittest.TestCase):
     def test_nn_with_single_layer_predicts_the_input_for_1D_array(self):
         nn = NeuralNetwork((3,))
@@ -85,21 +99,8 @@ class TestNeuralNetwork(unittest.TestCase):
             for row in range(weights[layer].shape[0]):
                 for col in range(weights[layer].shape[1]):
                     gradient = nn.get_loss_gradient(input_vectors, output_vectors)
-                    approx_gradient = self._get_approx_gradient(nn, input_vectors, output_vectors, layer, row, col)
+                    approx_gradient = get_approx_gradient(nn, input_vectors, output_vectors, layer, row, col)
                     self.assertAlmostEqual(gradient[layer][row, col], approx_gradient)
-
-    def _get_approx_gradient(self, nn, input_vectors, output_vectors, layer, row, col, epsilon=1e-6):
-        saved_weights = nn.get_weights()
-        weights = deepcopy(saved_weights)
-        weights[layer][row, col] += epsilon
-        nn.set_weights(weights)
-        loss1 = nn.get_loss(input_vectors, output_vectors)
-        weights = deepcopy(saved_weights)
-        weights[layer][row, col] -= epsilon
-        nn.set_weights(weights)
-        loss2 = nn.get_loss(input_vectors, output_vectors)
-        nn.set_weights(saved_weights)
-        return (loss1 - loss2) / (2 * epsilon)
 
 
 if __name__ == '__main__':
