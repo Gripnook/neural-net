@@ -1,7 +1,8 @@
-from __future__ import division
 import unittest
+
 import numpy as np
 from copy import deepcopy
+
 from neural_network import NeuralNetwork
 
 

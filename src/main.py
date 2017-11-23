@@ -1,8 +1,9 @@
-from __future__ import division
 import numpy as np
+
 from neural_network import NeuralNetwork
 from training import stochastic_gradient_descent, batch_gradient_descent
 from validation import k_fold_cross_validation
+
 import logging
 from logging_setup import setup_logging
 

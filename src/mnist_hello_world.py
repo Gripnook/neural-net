@@ -1,8 +1,11 @@
 from __future__ import division
+
 import numpy as np
+
 import mnist
 from neural_network import NeuralNetwork
 from training import stochastic_gradient_descent, batch_gradient_descent
+
 import logging
 from logging_setup import setup_logging
 
