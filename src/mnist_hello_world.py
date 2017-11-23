@@ -20,19 +20,22 @@ def test_mnist_one_hot(num_train_examples=-1, num_test_examples=-1):
 
     nn = NeuralNetwork((784, 24, 32, 10))
 
+    num_examples = train_input.shape[0]
+    batch_size = 100
     def callback(iteration):
-        if iteration % 1000 == 0:
+        if iteration % (num_examples // batch_size) == 0:
             training_prediction_rate = get_prediction_rate(nn, train_input, train_output)
             test_prediction_rate = get_prediction_rate(nn, test_input, test_output)
             training_loss = nn.get_loss(train_input, train_output)
             test_loss = nn.get_loss(test_input, test_output)
-            print('{},{:.6f},{:.6f},{:.6f},{:.6f}'.format(iteration, training_prediction_rate, test_prediction_rate,
+            print('{},{:.6f},{:.6f},{:.6f},{:.6f}'.format(iteration // (num_examples // batch_size),
+                                                          training_prediction_rate, test_prediction_rate,
                                                           training_loss, test_loss))
 
     logging.info('MNIST training started.')
-    print('iteration,training_accuracy,test_accuracy,training_loss,test_loss')
+    print('epoch,training_accuracy,test_accuracy,training_loss,test_loss')
     stochastic_gradient_descent(nn, train_input, train_output, num_iterations=10000000,
-                                learning_rate=0.1, momentum=0.1, batch_size=100, callback=callback)
+                                learning_rate=0.1, momentum=0.1, batch_size=batch_size, callback=callback)
 
 
 def convert_mnist_images(images):
