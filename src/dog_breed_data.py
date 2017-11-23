@@ -1,5 +1,12 @@
+import os
+from os.path import isfile, join
+import csv
+import imageio
+import numpy as np
+
+
 def get_classes():
-    return [
+    classes = [
         'affenpinscher', 'afghan_hound', 'african_hunting_dog', 'airedale', 'american_staffordshire_terrier',
         'appenzeller', 'australian_terrier', 'basenji', 'basset', 'beagle', 'bedlington_terrier',
         'bernese_mountain_dog', 'black-and-tan_coonhound', 'blenheim_spaniel', 'bloodhound', 'bluetick',
@@ -23,3 +30,30 @@ def get_classes():
         'walker_hound', 'weimaraner', 'welsh_springer_spaniel', 'west_highland_white_terrier', 'whippet',
         'wire-haired_fox_terrier', 'yorkshire_terrier'
     ]
+    return {classes[i]: i for i in range(len(classes))}
+
+
+def get_training_data(num_examples=-1, positive=1, negative=-1):
+    classes = get_classes()
+    labels = dict()
+    with open('data/labels.csv', 'rb') as csvfile:
+        reader = csv.reader(csvfile)
+        for row in reader:
+            labels[row[0]] = row[1]
+
+    data_path = 'data/train/'
+    files = [file for file in os.listdir(data_path) if isfile(join(data_path, file))]
+    files = files[:num_examples]
+
+    input_data = [np.array([]) for _ in files]
+    output_data = [np.array([]) for _ in files]
+    for i, file in zip(range(len(files)), files):
+        input_data[i] = imageio.imread(join(data_path, file))
+        output_data[i] = negative * np.ones((1, len(classes)))
+        output_data[i][0, classes[labels[file.split('.')[0]]]] = positive
+    return input_data, output_data
+
+
+if __name__ == '__main__':
+    input_data, output_data = get_training_data(num_examples=1)
+    print input_data, output_data
