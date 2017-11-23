@@ -1,32 +1,29 @@
 from __future__ import division
-
-import logging
 import numpy as np
 import mnist
-
 from neural_network import NeuralNetwork
+from training import stochastic_gradient_descent, batch_gradient_descent
+import logging
 from logging_setup import setup_logging
-from trainer import Trainer
 
 
-def test_mnist(num_train_examples=100, num_test_examples=100):
-    logging.info('Loading MNIST data.')
-    train_input = convert_mnist_images(mnist.train_images()[:num_train_examples])
-    train_output = convert_mnist_labels(mnist.train_labels()[:num_train_examples])
+# def test_mnist(num_train_examples=100, num_test_examples=100):
+#     logging.info('Loading MNIST data.')
+#     train_input = convert_mnist_images(mnist.train_images()[:num_train_examples])
+#     train_output = convert_mnist_labels(mnist.train_labels()[:num_train_examples])
 
-    test_input = convert_mnist_images(mnist.test_images()[:num_test_examples])
-    test_output = convert_mnist_labels(mnist.test_labels()[:num_test_examples])
+#     test_input = convert_mnist_images(mnist.test_images()[:num_test_examples])
+#     test_output = convert_mnist_labels(mnist.test_labels()[:num_test_examples])
 
-    nn = NeuralNetwork((784, 10, 1))
-    trainer = Trainer(nn)
-    logging.info('MNIST training started.')
-    trainer.train(train_input, train_output, method='stochastic')
-    logging.info('MNIST testing started.')
-    logging.info('MNIST L2 loss: {}'.format(nn.get_loss(test_input, test_output)))
+#     nn = NeuralNetwork((784, 10, 1))
+#     trainer = Trainer(nn)
+#     logging.info('MNIST training started.')
+#     trainer.train(train_input, train_output, method='stochastic')
+#     logging.info('MNIST testing started.')
+#     logging.info('MNIST L2 loss: {}'.format(nn.get_loss(test_input, test_output)))
 
 
 def test_mnist_one_hot(num_train_examples=-1, num_test_examples=-1):
-
     logging.info('Loading MNIST data.')
     train_input = convert_mnist_images(mnist.train_images()[:num_train_examples])
     train_output = convert_mnist_labels_one_hot(mnist.train_labels()[:num_train_examples])
@@ -34,8 +31,7 @@ def test_mnist_one_hot(num_train_examples=-1, num_test_examples=-1):
     test_input = convert_mnist_images(mnist.test_images()[:num_test_examples])
     test_output = convert_mnist_labels_one_hot(mnist.test_labels()[:num_test_examples])
 
-    nn = NeuralNetwork((784, 76, 24, 10), sigmoid='tanh')
-    trainer = Trainer(nn)
+    nn = NeuralNetwork((784, 24, 32, 10))
 
     def callback(iteration):
         if iteration % 1000 == 0:
@@ -43,11 +39,13 @@ def test_mnist_one_hot(num_train_examples=-1, num_test_examples=-1):
             test_prediction_rate = get_prediction_rate(nn, test_input, test_output)
             training_loss = nn.get_loss(train_input, train_output) / train_input.shape[0]
             test_loss = nn.get_loss(test_input, test_output) / test_input.shape[0]
-            print('{},{:.6f},{:.6f},{:.6f},{:.6f}'.format(iteration,training_prediction_rate, test_prediction_rate, training_loss, test_loss))
+            print('{},{:.6f},{:.6f},{:.6f},{:.6f}'.format(iteration, training_prediction_rate, test_prediction_rate,
+                                                          training_loss, test_loss))
 
     logging.info('MNIST training started.')
-    trainer.train(train_input, train_output, method='stochastic',
-                  num_iterations=10000000, learning_rate=0.1, momentum=0.0, callback=callback)
+    print('iteration,training_accuracy,test_accuracy,training_loss,test_loss')
+    stochastic_gradient_descent(nn, train_input, train_output, num_iterations=10000000,
+                                learning_rate=0.1, momentum=0.1, batch_size=100, callback=callback)
 
 
 def convert_mnist_images(images):
@@ -57,11 +55,11 @@ def convert_mnist_images(images):
     return normalize(np.array(lst))
 
 
-def convert_mnist_labels(labels):
-    lst = []
-    for label in labels:
-        lst.append(np.array([[label]]))
-    return np.array(lst)
+# def convert_mnist_labels(labels):
+#     lst = []
+#     for label in labels:
+#         lst.append(np.array([[label]]))
+#     return np.array(lst)
 
 
 def convert_mnist_labels_one_hot(labels):
