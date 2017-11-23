@@ -21,7 +21,7 @@ def stochastic_gradient_descent(nn, input_vectors, output_vectors, num_iteration
 
         # Update the weights using the selected examples.
         weights = nn.get_weights()
-        gradients = nn.get_gradient(random_input_vectors, random_output_vectors)
+        gradients = nn.get_loss_gradient(random_input_vectors, random_output_vectors)
         for weight, gradient, delta_weight in zip(weights, gradients, delta_weights):
             delta_weight[:] = -learning_rate * gradient + momentum * delta_weight
             weight += delta_weight
@@ -45,7 +45,7 @@ def batch_gradient_descent(nn, input_vectors, output_vectors, num_iterations=100
     for iteration in range(num_iterations):
         # Update the weights using the examples.
         weights = nn.get_weights()
-        gradients = nn.get_gradient(input_vectors, output_vectors)
+        gradients = nn.get_loss_gradient(input_vectors, output_vectors)
         for weight, gradient, delta_weight in zip(weights, gradients, delta_weights):
             delta_weight[:] = -learning_rate * gradient + momentum * delta_weight
             weight += delta_weight
