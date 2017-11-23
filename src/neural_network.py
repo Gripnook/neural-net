@@ -99,13 +99,13 @@ class NeuralNetwork(object):
 
         # Propagate the error backwards through the network.
         delta = self._sigmoid_prime(outputs[self._num_layers - 1]) * (
-            np.vstack(expected_output_vectors).transpose() - outputs[self._num_layers - 1])
-        bias_gradients[self._num_layers - 2] = -np.sum(delta, 1).reshape(-1, 1) / input_vectors.shape[0]
-        gradients[self._num_layers - 2] = -delta.dot(outputs[self._num_layers - 2].transpose()) / input_vectors.shape[0]
+            np.vstack(expected_output_vectors).transpose() - outputs[self._num_layers - 1]) / input_vectors.shape[0]
+        bias_gradients[self._num_layers - 2] = -np.sum(delta, 1).reshape(-1, 1)
+        gradients[self._num_layers - 2] = -delta.dot(outputs[self._num_layers - 2].transpose())
         for i in range(self._num_layers - 3, -1, -1):
             delta = self._sigmoid_prime(outputs[i + 1]) * ((self._weights[i + 1].transpose()).dot(delta))
-            bias_gradients[i] = -np.sum(delta, 1).reshape(-1, 1) / input_vectors.shape[0]
-            gradients[i] = -delta.dot(outputs[i].transpose()) / input_vectors.shape[0]
+            bias_gradients[i] = -np.sum(delta, 1).reshape(-1, 1)
+            gradients[i] = -delta.dot(outputs[i].transpose())
         return bias_gradients + gradients
 
 
