@@ -11,17 +11,17 @@ class TestNeuralNetwork(unittest.TestCase):
     def test_nn_with_single_layer_predicts_the_input_for_1D_array(self):
         nn = NeuralNetwork((3,))
         input_vector = np.array([[1, 1, 2]])
-        self.assertTrue(np.all(nn.predict(input_vector) == input_vector))
+        np.testing.assert_array_equal(nn.predict(input_vector), input_vector)
 
     def test_nn_with_single_layer_predicts_the_input_for_2D_array(self):
         nn = NeuralNetwork((3,))
         input_vectors = np.array([[1, 1, 2], [2, 0, 1]])
-        self.assertTrue(np.all(nn.predict(input_vectors) == input_vectors))
+        np.testing.assert_array_equal(nn.predict(input_vectors), input_vectors)
 
     def test_nn_with_single_layer_predicts_the_input_for_3D_array(self):
         nn = NeuralNetwork((3,))
         input_vectors = np.array([[[1, 1, 2]], [[2, 0, 1]]])
-        self.assertTrue(np.all(nn.predict(input_vectors) == input_vectors))
+        np.testing.assert_array_equal(nn.predict(input_vectors), input_vectors)
 
     def test_nn_with_logistic_sigmoid_has_correct_loss_for_single_example(self):
         nn = NeuralNetwork((2, 5, 1), sigmoid='logistic')
