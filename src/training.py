@@ -18,8 +18,8 @@ def stochastic_gradient_descent(nn, input_vectors, output_vectors, num_iteration
     for iteration in range(num_iterations):
         # Get a random batch of examples.
         random_indices = np.random.randint(input_vectors.shape[0], size=batch_size)
-        random_input_vectors = input_vectors[random_indices, :, :]
-        random_output_vectors = output_vectors[random_indices, :, :]
+        random_input_vectors = input_vectors[random_indices]
+        random_output_vectors = output_vectors[random_indices]
 
         # Update the weights using the selected examples.
         weights = nn.get_weights()
