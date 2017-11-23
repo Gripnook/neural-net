@@ -22,6 +22,7 @@ def test_mnist_one_hot(num_train_examples=-1, num_test_examples=-1):
 
     num_examples = train_input.shape[0]
     batch_size = 100
+
     def callback(iteration):
         if iteration % (num_examples // batch_size) == 0:
             training_prediction_rate = get_prediction_rate(nn, train_input, train_output)
