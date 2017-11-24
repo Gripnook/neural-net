@@ -36,7 +36,7 @@ def test_mnist_one_hot(num_train_examples=-1, num_test_examples=-1):
     logging.info('MNIST training started.')
     print('epoch,training_accuracy,test_accuracy,training_loss,test_loss')
     stochastic_gradient_descent(nn, train_input, train_output, num_iterations=10000000,
-                                learning_rate=0.1, momentum=0.1, batch_size=batch_size, callback=callback)
+                                learning_rate=0.01, momentum=0.1, batch_size=batch_size, callback=callback)
 
 
 def convert_mnist_images(images):

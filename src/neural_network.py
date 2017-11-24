@@ -5,19 +5,19 @@ import numpy as np
 
 class NeuralNetwork(object):
 
-    def __init__(self, layer_sizes, max_initial_weight=0.05, sigmoid='tanh', weight_decay=0.0):
-        self._layer_sizes = layer_sizes
-        self._num_layers = len(self._layer_sizes)
-        if self._num_layers <= 0:
+    def __init__(self, layer_sizes, sigmoid='tanh', weight_decay=0.0):
+        self.layer_sizes = layer_sizes
+        self.num_layers = len(self.layer_sizes)
+        if self.num_layers <= 0:
             raise ValueError('Neural network must have at least one layer.')
 
-        for layer_size in self._layer_sizes:
+        for layer_size in self.layer_sizes:
             if layer_size <= 0:
                 raise ValueError('Neural network layers must have at least one neuron.')
 
-        self._bias_weights = [np.array([]) for _ in range(self._num_layers - 1)]
-        self._weights = [np.array([]) for _ in range(self._num_layers - 1)]
-        self.reset_weights(max_initial_weight)
+        self._bias_weights = [np.array([]) for _ in range(self.num_layers - 1)]
+        self._weights = [np.array([]) for _ in range(self.num_layers - 1)]
+        self.reset_weights()
 
         if sigmoid is 'logistic':
             self._sigmoid = logistic_sigmoid
@@ -61,19 +61,19 @@ class NeuralNetwork(object):
         Sets the network weights to the given list of numpy arrays.
         """
 
-        self._bias_weights = weights[:self._num_layers - 1]
-        self._weights = weights[self._num_layers - 1:]
+        self._bias_weights = weights[:self.num_layers - 1]
+        self._weights = weights[self.num_layers - 1:]
 
-    def reset_weights(self, max_initial_weight=0.05):
+    def reset_weights(self):
         """
         Resets the network weights to random values.
         """
 
-        for i in range(1, self._num_layers):
-            self._bias_weights[i - 1] = np.random.uniform(-max_initial_weight, max_initial_weight,
-                                                          (self._layer_sizes[i], 1))
-            self._weights[i - 1] = np.random.uniform(-max_initial_weight, max_initial_weight,
-                                                     (self._layer_sizes[i], self._layer_sizes[i - 1]))
+        for i in range(1, self.num_layers):
+            standard_deviation = 1 / np.sqrt(self.layer_sizes[i - 1] + 1)
+            self._bias_weights[i - 1] = np.random.normal(0.0, standard_deviation, (self.layer_sizes[i], 1))
+            self._weights[i - 1] = np.random.normal(
+                0.0, standard_deviation, (self.layer_sizes[i], self.layer_sizes[i - 1]))
 
     def get_loss(self, input_vectors, expected_output_vectors):
         """
@@ -93,8 +93,8 @@ class NeuralNetwork(object):
         the given training examples. Returns the result as a list of numpy arrays.
         """
 
-        bias_gradients = [np.array([]) for _ in range(self._num_layers - 1)]
-        gradients = [np.array([]) for _ in range(self._num_layers - 1)]
+        bias_gradients = [np.array([]) for _ in range(self.num_layers - 1)]
+        gradients = [np.array([]) for _ in range(self.num_layers - 1)]
 
         # Stack the input vectors into a 2D array for propagation.
         outputs = [np.vstack(input_vectors).transpose()]
@@ -106,13 +106,13 @@ class NeuralNetwork(object):
             outputs.append(prediction)
 
         # Propagate the error backwards through the network.
-        delta = self._sigmoid_prime(outputs[self._num_layers - 1]) * (
-            np.vstack(expected_output_vectors).transpose() - outputs[self._num_layers - 1]) / input_vectors.shape[0]
-        bias_gradients[self._num_layers - 2] = -np.sum(delta, 1).reshape(
-            -1, 1) + self._weight_decay * self._bias_weights[self._num_layers - 2]
-        gradients[self._num_layers - 2] = -delta.dot(
-            outputs[self._num_layers - 2].transpose()) + self._weight_decay * self._weights[self._num_layers - 2]
-        for i in range(self._num_layers - 3, -1, -1):
+        delta = self._sigmoid_prime(outputs[self.num_layers - 1]) * (
+            np.vstack(expected_output_vectors).transpose() - outputs[self.num_layers - 1]) / input_vectors.shape[0]
+        bias_gradients[self.num_layers - 2] = -np.sum(delta, 1).reshape(
+            -1, 1) + self._weight_decay * self._bias_weights[self.num_layers - 2]
+        gradients[self.num_layers - 2] = -delta.dot(
+            outputs[self.num_layers - 2].transpose()) + self._weight_decay * self._weights[self.num_layers - 2]
+        for i in range(self.num_layers - 3, -1, -1):
             delta = self._sigmoid_prime(outputs[i + 1]) * ((self._weights[i + 1].transpose()).dot(delta))
             bias_gradients[i] = -np.sum(delta, 1).reshape(-1, 1) + self._weight_decay * self._bias_weights[i]
             gradients[i] = -delta.dot(outputs[i].transpose()) + self._weight_decay * self._weights[i]
