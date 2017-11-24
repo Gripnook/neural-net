@@ -51,7 +51,7 @@ def get_training_data(num_examples=-1, positive=1, negative=-1):
         input_data[i] = imageio.imread(join(data_path, f))
         output_data[i] = negative * np.ones((1, len(classes)))
         output_data[i][0, classes[labels[f.split('.')[0]]]] = positive
-    return input_data, output_data
+    return np.array(input_data), np.array(output_data)
 
 
 def main():
