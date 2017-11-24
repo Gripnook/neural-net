@@ -12,10 +12,10 @@ from logging_setup import setup_logging
 
 def test_mnist_one_hot(num_train_examples=-1, num_test_examples=-1):
     logging.info('Loading MNIST data.')
-    train_input = convert_mnist_images(mnist.train_images()[:num_train_examples])
+    train_input, mean_shift, std_scale = convert_mnist_images_train(mnist.train_images()[:num_train_examples])
     train_output = convert_mnist_labels_one_hot(mnist.train_labels()[:num_train_examples])
 
-    test_input = convert_mnist_images(mnist.test_images()[:num_test_examples])
+    test_input = convert_mnist_images_test(mnist.test_images()[:num_test_examples], mean_shift, std_scale)
     test_output = convert_mnist_labels_one_hot(mnist.test_labels()[:num_test_examples])
 
     nn = NeuralNetwork((784, 24, 32, 10), weight_decay=0.0)
@@ -39,11 +39,24 @@ def test_mnist_one_hot(num_train_examples=-1, num_test_examples=-1):
                                 learning_rate=0.01, momentum=0.1, batch_size=batch_size, callback=callback)
 
 
-def convert_mnist_images(images):
+def flatten_input_data(images):
     lst = []
     for image in images:
         lst.append(np.reshape(image, (1, image.size)))
-    return normalize(np.array(lst))
+    return np.array(lst, dtype=np.float64)
+
+
+def convert_mnist_images_train(images):
+    data = flatten_input_data(images)
+    mean_shift, std_scale = normalize(data)
+    return data, mean_shift, std_scale
+
+
+def convert_mnist_images_test(images, mean_shift, std_scale):
+    data = flatten_input_data(images)
+    data -= mean_shift
+    data /= std_scale
+    return data
 
 
 def convert_mnist_labels_one_hot(labels):
@@ -56,7 +69,11 @@ def convert_mnist_labels_one_hot(labels):
 
 
 def normalize(data):
-    return 2 * (data / 255.0) - 1
+    mean_shift = np.mean(data)
+    data -= mean_shift
+    std_scale = np.std(data)
+    data /= std_scale
+    return mean_shift, std_scale
 
 
 def get_prediction_rate(nn, test_input, test_output):
