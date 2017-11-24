@@ -18,7 +18,7 @@ def test_mnist_one_hot(num_train_examples=-1, num_test_examples=-1):
     test_input = convert_mnist_images(mnist.test_images()[:num_test_examples])
     test_output = convert_mnist_labels_one_hot(mnist.test_labels()[:num_test_examples])
 
-    nn = NeuralNetwork((784, 24, 32, 10))
+    nn = NeuralNetwork((784, 24, 32, 10), weight_decay=0.0)
 
     num_examples = train_input.shape[0]
     batch_size = 100

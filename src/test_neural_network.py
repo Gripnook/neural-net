@@ -21,6 +21,7 @@ def get_approx_loss_gradient(nn, input_vectors, output_vectors, layer, row, col,
 
 
 class TestNeuralNetwork(unittest.TestCase):
+
     def test_nn_with_single_layer_predicts_the_input_for_1D_array(self):
         nn = NeuralNetwork((3,))
         input_vector = np.array([[1, 1, 2]])
@@ -84,14 +85,67 @@ class TestNeuralNetwork(unittest.TestCase):
         output_vectors = np.array([[[2]], [[5]]])
         self._test_loss_gradient(nn, input_vectors, output_vectors)
 
+    def test_nn_with_logistic_sigmoid_and_decay_has_correct_loss_for_single_example(self):
+        nn = NeuralNetwork((2, 5, 1), sigmoid='logistic', weight_decay=0.1)
+        input_vector = np.array([[1, 1]])
+        output_vector = np.array([[2]])
+        self._test_loss(nn, input_vector, output_vector)
+
+    def test_nn_with_logistic_sigmoid_and_decay_has_correct_loss_for_multiple_examples(self):
+        nn = NeuralNetwork((2, 5, 1), sigmoid='logistic', weight_decay=0.1)
+        input_vectors = np.array([[[1, 1]], [[-1, 2]]])
+        output_vectors = np.array([[[2]], [[5]]])
+        self._test_loss(nn, input_vectors, output_vectors)
+
+    def test_nn_with_tanh_sigmoid_and_decay_has_correct_loss_for_single_example(self):
+        nn = NeuralNetwork((2, 5, 1), sigmoid='tanh', weight_decay=0.1)
+        input_vector = np.array([[1, 1]])
+        output_vector = np.array([[2]])
+        self._test_loss(nn, input_vector, output_vector)
+
+    def test_nn_with_tanh_sigmoid_and_decay_has_correct_loss_for_multiple_examples(self):
+        nn = NeuralNetwork((2, 5, 1), sigmoid='tanh', weight_decay=0.1)
+        input_vectors = np.array([[[1, 1]], [[-1, 2]]])
+        output_vectors = np.array([[[2]], [[5]]])
+        self._test_loss(nn, input_vectors, output_vectors)
+
+    def test_nn_with_logistic_sigmoid_and_decay_has_correct_loss_gradient_for_single_example(self):
+        nn = NeuralNetwork((2, 5, 1), sigmoid='logistic', weight_decay=0.1)
+        input_vector = np.array([[1, 1]])
+        output_vector = np.array([[2]])
+        self._test_loss_gradient(nn, input_vector, output_vector)
+
+    def test_nn_with_logistic_sigmoid_and_decay_has_correct_loss_gradient_for_multiple_examples(self):
+        nn = NeuralNetwork((2, 5, 1), sigmoid='logistic', weight_decay=0.1)
+        input_vectors = np.array([[[1, 1]], [[-1, 2]]])
+        output_vectors = np.array([[[2]], [[5]]])
+        self._test_loss_gradient(nn, input_vectors, output_vectors)
+
+    def test_nn_with_tanh_sigmoid_and_decay_has_correct_loss_gradient_for_single_example(self):
+        nn = NeuralNetwork((2, 5, 1), sigmoid='tanh', weight_decay=0.1)
+        input_vector = np.array([[1, 1]])
+        output_vector = np.array([[2]])
+        self._test_loss_gradient(nn, input_vector, output_vector)
+
+    def test_nn_with_tanh_sigmoid_and_decay_has_correct_loss_gradient_for_multiple_examples(self):
+        nn = NeuralNetwork((2, 5, 1), sigmoid='tanh', weight_decay=0.1)
+        input_vectors = np.array([[[1, 1]], [[-1, 2]]])
+        output_vectors = np.array([[[2]], [[5]]])
+        self._test_loss_gradient(nn, input_vectors, output_vectors)
+
     def test_nn_with_invalid_sigmoid_throws_error(self):
         with self.assertRaises(ValueError):
             nn = NeuralNetwork((2, 5, 1), sigmoid='invalid')
 
     def _test_loss(self, nn, input_vectors, output_vectors):
         prediction = nn.predict(input_vectors)
-        self.assertAlmostEqual(nn.get_loss(input_vectors, output_vectors),
-                               0.5 * np.sum((output_vectors - prediction) ** 2) / prediction.shape[0])
+
+        sum_of_weights_squared = 0.0
+        for weight in nn.get_weights():
+            sum_of_weights_squared += np.sum(weight ** 2)
+
+        self.assertAlmostEqual(nn.get_loss(input_vectors, output_vectors), 0.5 * np.sum(
+            (output_vectors - prediction) ** 2) / prediction.shape[0] + 0.5 * nn._weight_decay * sum_of_weights_squared)
 
     def _test_loss_gradient(self, nn, input_vectors, output_vectors):
         weights = nn.get_weights()

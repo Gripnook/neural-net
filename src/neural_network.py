@@ -4,7 +4,8 @@ import numpy as np
 
 
 class NeuralNetwork(object):
-    def __init__(self, layer_sizes, max_initial_weight=0.05, sigmoid='tanh'):
+
+    def __init__(self, layer_sizes, max_initial_weight=0.05, sigmoid='tanh', weight_decay=0.0):
         self._layer_sizes = layer_sizes
         self._num_layers = len(self._layer_sizes)
         if self._num_layers <= 0:
@@ -26,6 +27,8 @@ class NeuralNetwork(object):
             self._sigmoid_prime = tanh_sigmoid_prime
         else:
             raise ValueError('Invalid sigmoid function.')
+
+        self._weight_decay = weight_decay
 
     def predict(self, input_vectors):
         """
@@ -77,7 +80,12 @@ class NeuralNetwork(object):
         Computes the L2 loss for the given training examples.
         """
 
-        return 0.5 * np.sum((expected_output_vectors - self.predict(input_vectors)) ** 2) / input_vectors.shape[0]
+        sum_of_weights_squared = 0.0
+        for bias_weight, weight in zip(self._bias_weights, self._weights):
+            sum_of_weights_squared += np.sum(bias_weight ** 2) + np.sum(weight ** 2)
+
+        return 0.5 * np.sum((expected_output_vectors - self.predict(input_vectors)) ** 2) / input_vectors.shape[0] + \
+            0.5 * self._weight_decay * sum_of_weights_squared
 
     def get_loss_gradient(self, input_vectors, expected_output_vectors):
         """
@@ -100,12 +108,14 @@ class NeuralNetwork(object):
         # Propagate the error backwards through the network.
         delta = self._sigmoid_prime(outputs[self._num_layers - 1]) * (
             np.vstack(expected_output_vectors).transpose() - outputs[self._num_layers - 1]) / input_vectors.shape[0]
-        bias_gradients[self._num_layers - 2] = -np.sum(delta, 1).reshape(-1, 1)
-        gradients[self._num_layers - 2] = -delta.dot(outputs[self._num_layers - 2].transpose())
+        bias_gradients[self._num_layers - 2] = -np.sum(delta, 1).reshape(
+            -1, 1) + self._weight_decay * self._bias_weights[self._num_layers - 2]
+        gradients[self._num_layers - 2] = -delta.dot(
+            outputs[self._num_layers - 2].transpose()) + self._weight_decay * self._weights[self._num_layers - 2]
         for i in range(self._num_layers - 3, -1, -1):
             delta = self._sigmoid_prime(outputs[i + 1]) * ((self._weights[i + 1].transpose()).dot(delta))
-            bias_gradients[i] = -np.sum(delta, 1).reshape(-1, 1)
-            gradients[i] = -delta.dot(outputs[i].transpose())
+            bias_gradients[i] = -np.sum(delta, 1).reshape(-1, 1) + self._weight_decay * self._bias_weights[i]
+            gradients[i] = -delta.dot(outputs[i].transpose()) + self._weight_decay * self._weights[i]
         return bias_gradients + gradients
 
 
