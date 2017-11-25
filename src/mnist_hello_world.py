@@ -4,10 +4,9 @@ import numpy as np
 
 import mnist
 from neural_network import NeuralNetwork
-from training import stochastic_gradient_descent, batch_gradient_descent
+from training import stochastic_gradient_descent
 
 import logging
-from logging_setup import setup_logging
 
 
 def test_mnist_one_hot(num_train_examples=-1, num_test_examples=-1):
@@ -33,10 +32,11 @@ def test_mnist_one_hot(num_train_examples=-1, num_test_examples=-1):
                                                           training_prediction_rate, test_prediction_rate,
                                                           training_loss, test_loss))
 
-    logging.info('MNIST training started.')
+    print('MNIST training started.')
     print('epoch,training_accuracy,test_accuracy,training_loss,test_loss')
     stochastic_gradient_descent(nn, train_input, train_output, num_iterations=10000000,
-                                learning_rate=0.01, momentum=0.1, batch_size=batch_size, callback=callback)
+                                learning_rate=0.05, learning_decay=0.99, momentum=0.1, batch_size=batch_size,
+                                callback=callback)
 
 
 def flatten_input_data(images):
@@ -84,5 +84,4 @@ def get_prediction_rate(nn, test_input, test_output):
 
 
 if __name__ == '__main__':
-    setup_logging('info')
     test_mnist_one_hot()
