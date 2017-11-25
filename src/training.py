@@ -41,9 +41,9 @@ def batch_gradient_descent(nn, input_vectors, output_vectors, num_iterations=100
         callback(iteration)
 
 
-def update_weights(delta_weights, learning_rate, momentum, nn, random_input_vectors, random_output_vectors):
+def update_weights(delta_weights, learning_rate, momentum, nn, input_vectors, output_vectors):
     weights = nn.get_weights()
-    gradients = nn.get_loss_gradient(random_input_vectors, random_output_vectors)
+    gradients = nn.get_loss_gradient(input_vectors, output_vectors)
     for weight, gradient, delta_weight in zip(weights, gradients, delta_weights):
         delta_weight[:] = -learning_rate * gradient + momentum * delta_weight
         weight += delta_weight
