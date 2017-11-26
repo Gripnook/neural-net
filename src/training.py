@@ -4,7 +4,7 @@ import numpy as np
 
 
 def stochastic_gradient_descent(nn, input_vectors, output_vectors, num_iterations=1000,
-                                learning_rate=0.1, learning_decay=0.9, momentum=0.1, batch_size=100,
+                                learning_rate=0.1, learning_decay=1.0, momentum=0.0, batch_size=1,
                                 callback=lambda iteration: None):
     """
     Trains the neural network by using stochastic gradient descent
@@ -27,7 +27,7 @@ def stochastic_gradient_descent(nn, input_vectors, output_vectors, num_iteration
 
 
 def batch_gradient_descent(nn, input_vectors, output_vectors, num_iterations=1000,
-                           learning_rate=0.1, learning_decay=0.9, momentum=0.1, callback=lambda iteration: None):
+                           learning_rate=0.1, learning_decay=1.0, momentum=0.0, callback=lambda iteration: None):
     """
     Trains the neural network by using standard batch gradient
     descent with the given training examples.

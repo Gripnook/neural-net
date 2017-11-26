@@ -10,17 +10,47 @@ import logging
 
 
 def test_mnist_one_hot(num_train_examples=-1, num_test_examples=-1):
-    logging.info('Loading MNIST data.')
-    train_input, mean_shift, std_scale = convert_mnist_images_train(mnist.train_images()[:num_train_examples])
-    train_output = convert_mnist_labels_one_hot(mnist.train_labels()[:num_train_examples])
+    # Set the neural network parameters.
+    layer_sizes = (784, 24, 32, 10)
+    sigmoid = 'tanh'  # 'logistic' or 'tanh'
+    weight_decay = 0.0
 
-    test_input = convert_mnist_images_test(mnist.test_images()[:num_test_examples], mean_shift, std_scale)
-    test_output = convert_mnist_labels_one_hot(mnist.test_labels()[:num_test_examples])
+    print('Network Parameters')
+    print('layer_sizes: {}, sigmoid: {}, weight_decay: {}'.format(layer_sizes, sigmoid, weight_decay))
 
-    nn = NeuralNetwork((784, 24, 32, 10), weight_decay=0.0)
+    # Set the training parameters.
+    num_iterations = 1000000
+    learning_rate = 0.01
+    learning_decay = 1.0
+    momentum = 0.0
+    batch_size = 100
+
+    print('Training Parameters')
+    print('num_iterations: {}, learning_rate: {}, learning_decay: {}, momentum: {}, batch_size: {}'.format(
+        num_iterations, learning_rate, learning_decay, momentum, batch_size))
+
+    print('')
+
+    # Collect and preprocess the data.
+    if sigmoid is 'logistic':
+        train_input = convert_mnist_images_logistic(mnist.train_images()[:num_train_examples])
+        train_output = convert_mnist_labels_one_hot(
+            mnist.train_labels()[:num_train_examples], positive=0.9, negative=0.1)
+        test_input = convert_mnist_images_logistic(mnist.test_images()[:num_test_examples])
+        test_output = convert_mnist_labels_one_hot(mnist.test_labels()[:num_test_examples], positive=0.9, negative=0.1)
+    elif sigmoid is 'tanh':
+        train_input, mean_shift, std_scale = convert_mnist_images_train_tanh(mnist.train_images()[:num_train_examples])
+        train_output = convert_mnist_labels_one_hot(
+            mnist.train_labels()[:num_train_examples], positive=1.0, negative=-1.0)
+        test_input = convert_mnist_images_test_tanh(mnist.test_images()[:num_test_examples], mean_shift, std_scale)
+        test_output = convert_mnist_labels_one_hot(mnist.test_labels()[:num_test_examples], positive=1.0, negative=-1.0)
+    else:
+        raise ValueError('Invalid sigmoid function.')
+
+    # Create and train the neural network.
+    nn = NeuralNetwork(layer_sizes, sigmoid=sigmoid, weight_decay=weight_decay)
 
     num_examples = train_input.shape[0]
-    batch_size = 100
 
     def callback(iteration):
         if iteration % (num_examples // batch_size) == 0:
@@ -32,11 +62,40 @@ def test_mnist_one_hot(num_train_examples=-1, num_test_examples=-1):
                                                           training_prediction_rate, test_prediction_rate,
                                                           training_loss, test_loss))
 
-    print('MNIST training started.')
     print('epoch,training_accuracy,test_accuracy,training_loss,test_loss')
-    stochastic_gradient_descent(nn, train_input, train_output, num_iterations=10000000,
-                                learning_rate=0.05, learning_decay=0.99, momentum=0.1, batch_size=batch_size,
+    stochastic_gradient_descent(nn, train_input, train_output, num_iterations=num_iterations,
+                                learning_rate=learning_rate, learning_decay=learning_decay,
+                                momentum=momentum, batch_size=batch_size,
                                 callback=callback)
+
+
+def convert_mnist_images_logistic(images):
+    data = flatten_input_data(images)
+    return normalize_logistic(data)
+
+
+def normalize_logistic(data):
+    return data / 255.0
+
+
+def convert_mnist_images_train_tanh(images):
+    data = flatten_input_data(images)
+    return normalize_tanh(data)
+
+
+def convert_mnist_images_test_tanh(images, mean_shift, std_scale):
+    data = flatten_input_data(images)
+    data -= mean_shift
+    data /= std_scale
+    return data
+
+
+def normalize_tanh(data):
+    mean_shift = np.mean(data)
+    data -= mean_shift
+    std_scale = np.std(data)
+    data /= std_scale
+    return data, mean_shift, std_scale
 
 
 def flatten_input_data(images):
@@ -46,34 +105,13 @@ def flatten_input_data(images):
     return np.array(lst, dtype=np.float64)
 
 
-def convert_mnist_images_train(images):
-    data = flatten_input_data(images)
-    mean_shift, std_scale = normalize(data)
-    return data, mean_shift, std_scale
-
-
-def convert_mnist_images_test(images, mean_shift, std_scale):
-    data = flatten_input_data(images)
-    data -= mean_shift
-    data /= std_scale
-    return data
-
-
-def convert_mnist_labels_one_hot(labels):
+def convert_mnist_labels_one_hot(labels, positive, negative):
     lst = []
     for label in labels:
-        label_one_hot = -1 * np.ones(10)
-        label_one_hot[label] = 1
+        label_one_hot = negative * np.ones(10)
+        label_one_hot[label] = positive
         lst.append(np.array([label_one_hot]))
     return np.array(lst)
-
-
-def normalize(data):
-    mean_shift = np.mean(data)
-    data -= mean_shift
-    std_scale = np.std(data)
-    data /= std_scale
-    return mean_shift, std_scale
 
 
 def get_prediction_rate(nn, test_input, test_output):
