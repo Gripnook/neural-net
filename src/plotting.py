@@ -69,6 +69,22 @@ def plot_test_accuracy_multiple(y_ranges, labels, filename):
     f.savefig('plots/{}.pdf'.format(filename), bbox_inches='tight')
 
 
+def plot_csv_multiple_zoom(csv_filenames, labels, filename, start_epoch=1, end_epoch=100):
+    f = plt.figure()
+    ax = f.gca()
+    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+    x_range = [i for i in range(start_epoch, end_epoch)]
+    for csv_filename, label in zip(csv_filenames, labels):
+        csv_file = pd.read_csv('csv/{}.csv'.format(csv_filename))
+        y_range = csv_file['test_accuracy'][start_epoch:end_epoch]
+        plt.plot(x_range, y_range, label=label)
+    plt.xlabel('Epoch')
+    plt.ylabel('Test Accuracy')
+    plt.legend()
+    plt.grid(True)
+    f.savefig('plots/{}.pdf'.format(filename), bbox_inches='tight')
+
+
 def plot_network_size():
     filename = 'network_size'
     test_accuracies = test_mnist_one_hot(csv_filename=filename)
@@ -76,7 +92,6 @@ def plot_network_size():
 
 
 def plot_logistic_vs_tanh():
-    # TODO: Logistic memory error?
     test_accuracies_logistic = test_mnist_one_hot(sigmoid='logistic', csv_filename='logistic')
     test_accuracies_tanh = test_mnist_one_hot(sigmoid='tanh', csv_filename='tanh')
     plot_test_accuracy_multiple((test_accuracies_logistic, test_accuracies_tanh), ('logistic', 'tanh'),
@@ -94,36 +109,59 @@ def plot_batch_size():
     plot_test_accuracy_multiple(accuracy_ranges, labels, 'batch_size')
 
 
+def plot_batch_size_zoom():
+    batch_sizes = [1, 10, 100]
+    csv_filenames = ['batch_size_{}'.format(batch_size) for batch_size in batch_sizes]
+    labels = ['batch_size = {}'.format(batch_size) for batch_size in batch_sizes]
+    plot_csv_multiple_zoom(csv_filenames, labels, 'batch_size_zoom')
+
+
 def plot_momentum():
-    # 0.0 to 1.0 in 0.1
     momenta = [i / 10 for i in range(11)]
     accuracy_ranges = []
     labels = []
     for momentum in momenta:
-        test_accuracies = test_mnist_one_hot(momentum=momentum, csv_filename='momentum_{}'.format(momentum * 100))
+        test_accuracies = test_mnist_one_hot(momentum=momentum, csv_filename='momentum_{}'.format(int(momentum * 100)))
         accuracy_ranges.append(test_accuracies)
         labels.append('momentum = {}'.format(momentum))
     plot_test_accuracy_multiple(accuracy_ranges, labels, 'momentum')
 
 
+def plot_momentum_zoom():
+    momenta = [0.0, 0.3, 0.6, 0.9]
+    csv_filenames = ['momentum_{}'.format(int(momentum * 100)) for momentum in momenta]
+    labels = ['momentum = {}'.format(momentum) for momentum in momenta]
+    plot_csv_multiple_zoom(csv_filenames, labels, 'momentum_zoom')
+
+
 def plot_learning_rate_decay():
-    # 0.7, 0.8, 0.9, 0.99, 1
     learning_rate_decays = [0.7, 0.8, 0.9, 0.99, 1]
     accuracy_ranges = []
     labels = []
     for learning_rate_decay in learning_rate_decays:
-        test_accuracies = test_mnist_one_hot(learning_decay=learning_rate_decay,
-                                             csv_filename='learning_rate_decay_{}'.format(learning_rate_decay * 100))
+        test_accuracies = test_mnist_one_hot(
+            learning_rate_decay=learning_rate_decay,
+            csv_filename='learning_rate_decay_{}'.format(int(learning_rate_decay * 100)))
         accuracy_ranges.append(test_accuracies)
         labels.append('learning_rate_decay = {}'.format(learning_rate_decay))
     plot_test_accuracy_multiple(accuracy_ranges, labels, 'learning_rate_decay')
 
 
-if __name__ == '__main__':
-    plot_network_size()
-    plot_logistic_vs_tanh()
-    plot_batch_size()
-    plot_momentum()
-    plot_learning_rate_decay()
-    # TODO: Zoom into plots (starting at epoch 1)
+def plot_learning_rate_decay_zoom():
+    learning_rate_decays = [0.7, 0.8, 0.9, 0.99, 1]
+    csv_filenames = ['learning_rate_decay_{}'.format(int(learning_rate_decay * 100)) for learning_rate_decay in
+                     learning_rate_decays]
+    labels = ['learning_rate_decay = {}'.format(learning_rate_decay) for learning_rate_decay in learning_rate_decays]
+    plot_csv_multiple_zoom(csv_filenames, labels, 'learning_rate_decay_zoom')
 
+
+if __name__ == '__main__':
+    # plot_network_size()
+    # plot_logistic_vs_tanh()
+    # plot_batch_size()
+    # plot_momentum()
+    # plot_learning_rate_decay()
+
+    # plot_batch_size_zoom()
+    # plot_momentum_zoom()
+    plot_learning_rate_decay_zoom()

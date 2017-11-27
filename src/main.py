@@ -214,7 +214,7 @@ class MNISTNeuralNetworkGUI(object):
         self.batch_size = int(self.batch_size_var.get())
 
         stochastic_gradient_descent(self.nn, self.train_input, self.train_output, num_iterations=self.num_iterations,
-                                    learning_rate=self.learning_rate, learning_decay=self.learning_decay,
+                                    learning_rate=self.learning_rate, learning_rate_decay=self.learning_decay,
                                     momentum=self.momentum, batch_size=self.batch_size)
 
         self.test()

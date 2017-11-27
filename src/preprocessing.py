@@ -33,7 +33,7 @@ def normalize_tanh(data):
 
 
 def flatten_input_data(images):
-    return np.array(images.reshape((images.shape[0], 1, images.shape[1] * images.shape[2])), dtype='float64')
+    return np.array(images.reshape((images.shape[0], 1, images.shape[1] * images.shape[2])), dtype='float32')
 
 
 def convert_mnist_labels_one_hot(labels, positive, negative):
