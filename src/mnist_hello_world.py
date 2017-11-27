@@ -5,8 +5,7 @@ import numpy as np
 import mnist
 from neural_network import NeuralNetwork
 from training import stochastic_gradient_descent
-
-import logging
+from preprocessing import *
 
 
 def test_mnist_one_hot(num_train_examples=-1, num_test_examples=-1):
@@ -32,13 +31,13 @@ def test_mnist_one_hot(num_train_examples=-1, num_test_examples=-1):
     print('')
 
     # Collect and preprocess the data.
-    if sigmoid is 'logistic':
+    if sigmoid == 'logistic':
         train_input = convert_mnist_images_logistic(mnist.train_images()[:num_train_examples])
         train_output = convert_mnist_labels_one_hot(
             mnist.train_labels()[:num_train_examples], positive=0.9, negative=0.1)
         test_input = convert_mnist_images_logistic(mnist.test_images()[:num_test_examples])
         test_output = convert_mnist_labels_one_hot(mnist.test_labels()[:num_test_examples], positive=0.9, negative=0.1)
-    elif sigmoid is 'tanh':
+    elif sigmoid == 'tanh':
         train_input, mean_shift, std_scale = convert_mnist_images_train_tanh(mnist.train_images()[:num_train_examples])
         train_output = convert_mnist_labels_one_hot(
             mnist.train_labels()[:num_train_examples], positive=1.0, negative=-1.0)
@@ -67,58 +66,6 @@ def test_mnist_one_hot(num_train_examples=-1, num_test_examples=-1):
                                 learning_rate=learning_rate, learning_decay=learning_decay,
                                 momentum=momentum, batch_size=batch_size,
                                 callback=callback)
-
-
-def convert_mnist_images_logistic(images):
-    data = flatten_input_data(images)
-    return normalize_logistic(data)
-
-
-def normalize_logistic(data):
-    return data / 255.0
-
-
-def convert_mnist_images_train_tanh(images):
-    data = flatten_input_data(images)
-    return normalize_tanh(data)
-
-
-def convert_mnist_images_test_tanh(images, mean_shift, std_scale):
-    data = flatten_input_data(images)
-    data -= mean_shift
-    data /= std_scale
-    return data
-
-
-def normalize_tanh(data):
-    mean_shift = np.mean(data)
-    data -= mean_shift
-    std_scale = np.std(data)
-    data /= std_scale
-    return data, mean_shift, std_scale
-
-
-def flatten_input_data(images):
-    lst = []
-    for image in images:
-        lst.append(np.reshape(image, (1, image.size)))
-    return np.array(lst, dtype=np.float64)
-
-
-def convert_mnist_labels_one_hot(labels, positive, negative):
-    lst = []
-    for label in labels:
-        label_one_hot = negative * np.ones(10)
-        label_one_hot[label] = positive
-        lst.append(np.array([label_one_hot]))
-    return np.array(lst)
-
-
-def get_prediction_rate(nn, test_input, test_output):
-    prediction = nn.predict(test_input)
-    diff = np.argmax(prediction, 2) - np.argmax(test_output, 2)
-    error = np.count_nonzero(diff) / diff.size
-    return 1.0 - error
 
 
 if __name__ == '__main__':

@@ -19,10 +19,10 @@ class NeuralNetwork(object):
         self._weights = [np.array([]) for _ in range(self.num_layers - 1)]
         self.reset_weights()
 
-        if sigmoid is 'logistic':
+        if sigmoid == 'logistic':
             self._sigmoid = logistic_sigmoid
             self._sigmoid_prime = logistic_sigmoid_prime
-        elif sigmoid is 'tanh':
+        elif sigmoid == 'tanh':
             self._sigmoid = tanh_sigmoid
             self._sigmoid_prime = tanh_sigmoid_prime
         else:
