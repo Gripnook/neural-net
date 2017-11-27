@@ -2,8 +2,6 @@ from __future__ import division
 
 import numpy as np
 
-import mnist
-
 
 def convert_mnist_images_logistic(images):
     data = flatten_input_data(images)
