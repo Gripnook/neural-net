@@ -24,7 +24,7 @@ def test_mnist_one_hot(num_train_examples=-1, num_test_examples=-1, hidden_layer
     num_iterations = (NUM_EXAMPLES // batch_size) * num_epochs
 
     print('Training Parameters')
-    print('num_iterations: {}, learning_decay: {}, learning_decay: {}, momentum: {}, batch_size: {}'.format(
+    print('num_iterations: {}, learning_rate: {}, learning_decay: {}, momentum: {}, batch_size: {}'.format(
         num_iterations, learning_rate, learning_decay, momentum, batch_size))
 
     print('')
