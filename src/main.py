@@ -82,7 +82,7 @@ class MNISTNeuralNetworkGUI(object):
         self.learning_rate_entry = Entry(self.config_frame, textvar=self.learning_rate_var)
         self.learning_rate_entry.grid(row=8, column=1, sticky=W)
 
-        self.learning_decay_label = Label(self.config_frame, text='Learning Decay:')
+        self.learning_decay_label = Label(self.config_frame, text='Layer Decay:')
         self.learning_decay_label.grid(row=9, column=0, sticky=W)
         self.learning_decay_var = StringVar()
         self.learning_decay_var.set('1.0')
