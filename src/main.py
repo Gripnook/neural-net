@@ -255,8 +255,8 @@ class MNISTNeuralNetworkGUI(object):
 
         self.validation_training_accuracy_var.config(text=('%.2f %%' % (training_prediction_rate)))
         self.validation_test_accuracy_var.config(text=('%.2f %%' % (test_prediction_rate)))
-        self.validation_training_loss_var.config(text=('%.6f' % (training_loss)))
-        self.validation_test_loss_var.config(text=('%.6f' % (test_loss)))
+        self.validation_training_loss_var.config(text=('%.4f' % (training_loss)))
+        self.validation_test_loss_var.config(text=('%.4f' % (test_loss)))
 
     def reset(self):
         self.canvas_data = np.zeros((28, 28))
