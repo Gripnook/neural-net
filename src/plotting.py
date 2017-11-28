@@ -117,7 +117,7 @@ def plot_network_size_csv_zoom():
 
 
 def plot_logistic_vs_tanh():
-    test_accuracies_logistic = test_mnist_one_hot(sigmoid='logistic', learning_rate=0.04, csv_filename='logistic')
+    test_accuracies_logistic = test_mnist_one_hot(sigmoid='logistic', learning_rate=0.1178, csv_filename='logistic')
     test_accuracies_tanh = test_mnist_one_hot(sigmoid='tanh', csv_filename='tanh')
     plot_test_accuracy_multiple((test_accuracies_logistic, test_accuracies_tanh), ('logistic', 'tanh'),
                                 'logistic_vs_tanh')

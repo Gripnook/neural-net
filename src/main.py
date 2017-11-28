@@ -41,7 +41,7 @@ class MNISTNeuralNetworkGUI(object):
         self.layer_sizes_label = Label(self.config_frame, text='Hidden Layers:')
         self.layer_sizes_label.grid(row=1, column=0, sticky=W)
         self.layer_sizes_var = StringVar()
-        self.layer_sizes_var.set('(24, 32)')
+        self.layer_sizes_var.set('(100,)')
         self.layer_sizes_entry = Entry(self.config_frame, textvar=self.layer_sizes_var)
         self.layer_sizes_entry.grid(row=1, column=1, sticky=W)
 
