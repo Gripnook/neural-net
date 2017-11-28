@@ -161,7 +161,7 @@ def plot_batch_size_csv_zoom():
 
 
 def plot_momentum():
-    momenta = [i / 10 for i in range(11)]
+    momenta = [0.0, 0.3, 0.6, 0.9]
     accuracy_ranges = []
     labels = []
     for momentum in momenta:
