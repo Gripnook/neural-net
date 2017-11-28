@@ -11,7 +11,7 @@ from preprocessing import *
 
 def test_mnist_one_hot(num_train_examples=-1, num_test_examples=-1, hidden_layers=(100,), sigmoid='tanh',
                        learning_rate=0.01, layer_decay=1.0, momentum=0.0, batch_size=100, num_epochs=100,
-                       csv_filename=None, return_test_accuracies=False):
+                       csv_filename=None, return_test_accuracies=True):
     # Collect and preprocess the data.
     if sigmoid == 'logistic':
         train_input = convert_mnist_images_logistic(mnist.train_images()[:num_train_examples])
