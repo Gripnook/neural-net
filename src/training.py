@@ -4,7 +4,7 @@ import numpy as np
 
 
 def stochastic_gradient_descent(nn, input_vectors, output_vectors, num_iterations=1000,
-                                learning_rate=0.1, learning_decay=1.0, momentum=0.0, batch_size=1,
+                                learning_rate=0.1, layer_decay=1.0, momentum=0.0, batch_size=1,
                                 callback=lambda iteration: None):
     """
     Trains the neural network by using stochastic gradient descent
@@ -12,7 +12,7 @@ def stochastic_gradient_descent(nn, input_vectors, output_vectors, num_iteration
     """
 
     delta_weights = [np.zeros(weight.shape) for weight in nn.get_weights()]
-    learning_rates = get_learning_rates(nn, learning_rate, learning_decay)
+    learning_rates = get_learning_rates(nn, learning_rate, layer_decay)
     for iteration in range(num_iterations):
         # Get a random batch of examples.
         random_indices = np.random.randint(input_vectors.shape[0], size=batch_size)
@@ -27,14 +27,14 @@ def stochastic_gradient_descent(nn, input_vectors, output_vectors, num_iteration
 
 
 def batch_gradient_descent(nn, input_vectors, output_vectors, num_iterations=1000,
-                           learning_rate=0.1, learning_decay=1.0, momentum=0.0, callback=lambda iteration: None):
+                           learning_rate=0.1, layer_decay=1.0, momentum=0.0, callback=lambda iteration: None):
     """
     Trains the neural network by using standard batch gradient
     descent with the given training examples.
     """
 
     delta_weights = [np.zeros(weight.shape) for weight in nn.get_weights()]
-    learning_rates = get_learning_rates(nn, learning_rate, learning_decay)
+    learning_rates = get_learning_rates(nn, learning_rate, layer_decay)
     for iteration in range(num_iterations):
         # Update the weights using the examples.
         update_weights(nn, input_vectors, output_vectors, delta_weights, learning_rates, momentum)
@@ -52,11 +52,11 @@ def update_weights(nn, input_vectors, output_vectors, delta_weights, learning_ra
     nn.set_weights(weights)
 
 
-def get_learning_rates(nn, learning_rate, learning_decay):
+def get_learning_rates(nn, learning_rate, layer_decay):
     learning_rates = []
     running_learning_rate = learning_rate
     for i in range(nn.num_layers - 1):
         learning_rates.append(running_learning_rate)
-        running_learning_rate *= learning_decay
+        running_learning_rate *= layer_decay
     learning_rates *= 2
     return learning_rates

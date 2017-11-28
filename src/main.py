@@ -82,12 +82,12 @@ class MNISTNeuralNetworkGUI(object):
         self.learning_rate_entry = Entry(self.config_frame, textvar=self.learning_rate_var)
         self.learning_rate_entry.grid(row=8, column=1, sticky=W)
 
-        self.learning_decay_label = Label(self.config_frame, text='Layer Decay:')
-        self.learning_decay_label.grid(row=9, column=0, sticky=W)
-        self.learning_decay_var = StringVar()
-        self.learning_decay_var.set('1.0')
-        self.learning_decay_entry = Entry(self.config_frame, textvar=self.learning_decay_var)
-        self.learning_decay_entry.grid(row=9, column=1, sticky=W)
+        self.layer_decay_label = Label(self.config_frame, text='Layer Decay:')
+        self.layer_decay_label.grid(row=9, column=0, sticky=W)
+        self.layer_decay_var = StringVar()
+        self.layer_decay_var.set('1.0')
+        self.layer_decay_entry = Entry(self.config_frame, textvar=self.layer_decay_var)
+        self.layer_decay_entry.grid(row=9, column=1, sticky=W)
 
         self.momentum_label = Label(self.config_frame, text='Momentum:')
         self.momentum_label.grid(row=10, column=0, sticky=W)
@@ -139,7 +139,7 @@ class MNISTNeuralNetworkGUI(object):
         self.validation_test_loss_var.grid(row=3, column=1, sticky=W)
 
     def init_test_frame(self):
-        self.canvas_data = np.array(self.test_images[0], dtype='float64')
+        self.canvas_data = np.array(self.test_images[0], dtype='float32')
 
         self.test_frame = Frame(self.master)
         self.test_frame.grid(row=0, column=1)
@@ -185,7 +185,7 @@ class MNISTNeuralNetworkGUI(object):
 
     def create_network(self):
         # Set the neural network parameters.
-        self.layer_sizes = tuple([784] + list(literal_eval(self.layer_sizes_var.get())) + [10])
+        self.layer_sizes = (784,) + literal_eval(self.layer_sizes_var.get()) + (10,)
         self.sigmoid = self.sigmoid_var.get()
         if not (self.sigmoid == 'logistic' or self.sigmoid == 'tanh'):
             raise ValueError('Invalid sigmoid function.')
@@ -209,12 +209,12 @@ class MNISTNeuralNetworkGUI(object):
         # Set the training parameters.
         self.num_iterations = int(self.num_iterations_var.get())
         self.learning_rate = float(self.learning_rate_var.get())
-        self.learning_decay = float(self.learning_decay_var.get())
+        self.layer_decay = float(self.layer_decay_var.get())
         self.momentum = float(self.momentum_var.get())
         self.batch_size = int(self.batch_size_var.get())
 
         stochastic_gradient_descent(self.nn, self.train_input, self.train_output, num_iterations=self.num_iterations,
-                                    learning_rate=self.learning_rate, learning_decay=self.learning_decay,
+                                    learning_rate=self.learning_rate, layer_decay=self.layer_decay,
                                     momentum=self.momentum, batch_size=self.batch_size)
 
         self.test()
@@ -248,13 +248,13 @@ class MNISTNeuralNetworkGUI(object):
         else:
             raise ValueError('Invalid sigmoid function.')
 
-        training_prediction_rate = 100 * get_prediction_rate(self.nn, self.train_input, self.train_output)
-        test_prediction_rate = 100 * get_prediction_rate(self.nn, test_input, test_output)
+        training_prediction_accuracy = 100 * get_prediction_accuracy(self.nn, self.train_input, self.train_output)
+        test_prediction_accuracy = 100 * get_prediction_accuracy(self.nn, test_input, test_output)
         training_loss = self.nn.get_loss(self.train_input, self.train_output)
         test_loss = self.nn.get_loss(test_input, test_output)
 
-        self.validation_training_accuracy_var.config(text=('%.2f %%' % (training_prediction_rate)))
-        self.validation_test_accuracy_var.config(text=('%.2f %%' % (test_prediction_rate)))
+        self.validation_training_accuracy_var.config(text=('%.2f %%' % (training_prediction_accuracy)))
+        self.validation_test_accuracy_var.config(text=('%.2f %%' % (test_prediction_accuracy)))
         self.validation_training_loss_var.config(text=('%.4f' % (training_loss)))
         self.validation_test_loss_var.config(text=('%.4f' % (test_loss)))
 

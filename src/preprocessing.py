@@ -37,15 +37,15 @@ def flatten_input_data(images):
 
 
 def convert_mnist_labels_one_hot(labels, positive, negative):
-    lst = []
+    data = []
     for label in labels:
         label_one_hot = negative * np.ones(10)
         label_one_hot[label] = positive
-        lst.append(np.array([label_one_hot]))
-    return np.array(lst)
+        data.append(np.array([label_one_hot]))
+    return np.array(data)
 
 
-def get_prediction_rate(nn, test_input, test_output):
+def get_prediction_accuracy(nn, test_input, test_output):
     prediction = nn.predict(test_input)
     diff = np.argmax(prediction, 2) - np.argmax(test_output, 2)
     error = np.count_nonzero(diff) / diff.size
