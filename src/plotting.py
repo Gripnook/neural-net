@@ -6,7 +6,7 @@ import pandas as pd
 
 from matplotlib.ticker import MaxNLocator
 
-from mnist_hello_world import test_mnist_one_hot
+from mnist_fully_connected import test_mnist_one_hot
 
 plt.rcParams["font.family"] = "Times New Roman"
 NUM_DATA_POINTS = 35
@@ -21,7 +21,7 @@ def plot_directory(directory, x_label, y_label):
         x_range = pd.read_csv(os.path.join(directory, filename))[x_label][1:NUM_DATA_POINTS]
         y_range = pd.read_csv(os.path.join(directory, filename))[y_label][1:NUM_DATA_POINTS]
         splt = filename.split('.')[0].split('_')
-        plt.plot(x_range, y_range, label='learning_rate={}%, learning_decay={}%'.format(splt[2], splt[4]))
+        plt.plot(x_range, y_range, label='learning_rate={}%, layer_decay={}%'.format(splt[2], splt[4]))
     plt.xlabel(x_label)
     plt.ylabel(y_label)
     plt.legend()
@@ -86,7 +86,7 @@ def plot_csv_multiple_zoom(csv_filenames, labels, filename, start_epoch=1, end_e
 
 
 def plot_network_size():
-    lst_hidden_layers = [(100,), (200,), (300,), (24, 32), (300, 100)]
+    lst_hidden_layers = [(100,), (200,), (300,), (100, 100), (200, 100), (300, 100)]
     accuracy_ranges = []
     labels = []
     for hidden_layers in lst_hidden_layers:
@@ -98,14 +98,8 @@ def plot_network_size():
     plot_test_accuracy_multiple(accuracy_ranges, labels, 'network_size')
 
 
-def save_network_size_to_csv():
-    hidden_layers = (300,)
-    filename = 'network_size_{}'.format('{}'.format('_'.join(str(layer) for layer in hidden_layers)))
-    test_mnist_one_hot(hidden_layers=hidden_layers, csv_filename=filename, return_test_accuracies=False)
-
-
 def plot_network_size_csv():
-    lst_hidden_layers = [(100,), (200,), (300,), (24, 32), (300, 100)]
+    lst_hidden_layers = [(100,), (200,), (300,), (100, 100), (200, 100), (300, 100)]
     csv_filenames = ['network_size_{}'.format('_'.join(str(layer) for layer in hidden_layers))
                      for hidden_layers in lst_hidden_layers]
     labels = ['Hidden layer sizes: ({})'.format(', '.join(str(layer) for layer in hidden_layers))
@@ -114,7 +108,7 @@ def plot_network_size_csv():
 
 
 def plot_network_size_csv_zoom():
-    lst_hidden_layers = [(100,), (200,), (300,), (24, 32), (300, 100)]
+    lst_hidden_layers = [(100,), (200,), (300,), (100, 100), (200, 100), (300, 100)]
     csv_filenames = ['network_size_{}'.format('_'.join(str(layer) for layer in hidden_layers))
                      for hidden_layers in lst_hidden_layers]
     labels = ['Hidden layer sizes: ({})'.format(','.join(str(layer) for layer in hidden_layers))
@@ -123,10 +117,29 @@ def plot_network_size_csv_zoom():
 
 
 def plot_logistic_vs_tanh():
-    test_accuracies_logistic = test_mnist_one_hot(sigmoid='logistic', csv_filename='logistic')
+    test_accuracies_logistic = test_mnist_one_hot(sigmoid='logistic', learning_rate=0.04, csv_filename='logistic')
     test_accuracies_tanh = test_mnist_one_hot(sigmoid='tanh', csv_filename='tanh')
     plot_test_accuracy_multiple((test_accuracies_logistic, test_accuracies_tanh), ('logistic', 'tanh'),
                                 'logistic_vs_tanh')
+
+
+def plot_learning_rate():
+    learning_rates = [0.01, 0.02, 0.05, 0.1]
+    accuracy_ranges = []
+    labels = []
+    for learning_rate in learning_rates:
+        test_accuracies = test_mnist_one_hot(learning_rate=learning_rate,
+                                             csv_filename='learning_rate_{}'.format(int(learning_rate * 100)))
+        accuracy_ranges.append(test_accuracies)
+        labels.append('Learning rate: {}'.format(learning_rate))
+    plot_test_accuracy_multiple(accuracy_ranges, labels, 'learning_rate')
+
+
+def plot_learning_rate_csv_zoom():
+    learning_rates = [0.01, 0.02, 0.05, 0.1]
+    csv_filenames = ['learning_rate_{}'.format(int(learning_rate * 100)) for learning_rate in learning_rates]
+    labels = ['Learning rate: {}'.format(learning_rate) for learning_rate in learning_rates]
+    plot_csv_multiple_zoom(csv_filenames, labels, 'learning_rate_zoom')
 
 
 def plot_batch_size():
@@ -165,26 +178,36 @@ def plot_momentum_csv_zoom():
     plot_csv_multiple_zoom(csv_filenames, labels, 'momentum')
 
 
-def plot_learning_rate_decay():
-    learning_rate_decays = [0.7, 0.8, 0.9, 0.99, 1]
+def plot_layer_decay():
+    layer_decays = [0.7, 0.8, 0.9, 0.99, 1]
     accuracy_ranges = []
     labels = []
-    for learning_rate_decay in learning_rate_decays:
+    for layer_decay in layer_decays:
         test_accuracies = test_mnist_one_hot(
-            learning_decay=learning_rate_decay,
-            csv_filename='learning_rate_decay_{}'.format(int(learning_rate_decay * 100)))
+            layer_decay=layer_decay,
+            csv_filename='layer_decay_{}'.format(int(layer_decay * 100)))
         accuracy_ranges.append(test_accuracies)
-        labels.append('Learning rate decay: {}'.format(learning_rate_decay))
-    plot_test_accuracy_multiple(accuracy_ranges, labels, 'learning_rate_decay')
+        labels.append('Layer decay: {}'.format(layer_decay))
+    plot_test_accuracy_multiple(accuracy_ranges, labels, 'layer_decay')
 
 
-def plot_learning_rate_decay_csv_zoom():
-    learning_rate_decays = [0.7, 0.8, 0.9, 0.99, 1]
-    csv_filenames = ['learning_rate_decay_{}'.format(int(learning_rate_decay * 100)) for learning_rate_decay in
-                     learning_rate_decays]
-    labels = ['Learning rate decay: {}'.format(learning_rate_decay) for learning_rate_decay in learning_rate_decays]
-    plot_csv_multiple_zoom(csv_filenames, labels, 'learning_rate_decay', start_epoch=0)
+def plot_layer_decay_csv_zoom():
+    layer_decays = [0.7, 0.8, 0.9, 0.99, 1]
+    csv_filenames = ['layer_decay_{}'.format(int(layer_decay * 100)) for layer_decay in
+                     layer_decays]
+    labels = ['Layer decay: {}'.format(layer_decay) for layer_decay in layer_decays]
+    plot_csv_multiple_zoom(csv_filenames, labels, 'layer_decay', start_epoch=0)
 
 
 if __name__ == '__main__':
+    plot_logistic_vs_tanh()
+    plot_learning_rate()
+    plot_learning_rate_csv_zoom()
+    plot_batch_size()
+    plot_batch_size_csv_zoom()
+    plot_momentum()
+    plot_momentum_csv_zoom()
+    plot_layer_decay()
+    plot_layer_decay_csv_zoom()
+    plot_network_size()
     plot_network_size_csv_zoom()
