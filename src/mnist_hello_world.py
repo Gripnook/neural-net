@@ -13,7 +13,7 @@ NUM_EXAMPLES = 59999
 
 def test_mnist_one_hot(num_train_examples=-1, num_test_examples=-1, hidden_layers=(24, 32), sigmoid='tanh',
                        learning_rate=0.01, learning_decay=1.0, momentum=0.0, batch_size=100, num_epochs=100,
-                       csv_filename=None):
+                       csv_filename=None, return_test_accuracies=False):
     layer_sizes = (784,) + hidden_layers + (10,)
     weight_decay = 0.0
 
@@ -49,8 +49,14 @@ def test_mnist_one_hot(num_train_examples=-1, num_test_examples=-1, hidden_layer
     nn = NeuralNetwork(layer_sizes, sigmoid=sigmoid, weight_decay=weight_decay)
 
     num_examples = train_input.shape[0]
-    rows = []
-    test_accuracies = []
+
+    rows = None
+    if csv_filename is not None:
+        rows = []
+
+    test_accuracies = None
+    if return_test_accuracies:
+        test_accuracies = []
 
     def callback(iteration):
         if iteration % (num_examples // batch_size) == 0:
@@ -61,8 +67,10 @@ def test_mnist_one_hot(num_train_examples=-1, num_test_examples=-1, hidden_layer
             test_loss = nn.get_loss(test_input, test_output)
             print('{},{:.6f},{:.6f},{:.6f},{:.6f}'.format(epoch, training_prediction_rate, test_prediction_rate,
                                                           training_loss, test_loss))
-            rows.append((epoch, training_prediction_rate, test_prediction_rate, training_loss, test_loss))
-            test_accuracies.append(test_prediction_rate)
+            if csv_filename is not None:
+                rows.append((epoch, training_prediction_rate, test_prediction_rate, training_loss, test_loss))
+            if return_test_accuracies:
+                test_accuracies.append(test_prediction_rate)
 
     header = 'epoch,training_accuracy,test_accuracy,training_loss,test_loss'
     print(header)
@@ -73,7 +81,8 @@ def test_mnist_one_hot(num_train_examples=-1, num_test_examples=-1, hidden_layer
     if csv_filename is not None:
         save_rows_to_csv(csv_filename, rows, header.split(','))
 
-    return test_accuracies
+    if return_test_accuracies:
+        return test_accuracies
 
 
 def save_rows_to_csv(filename, rows, header=None):

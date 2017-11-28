@@ -86,40 +86,40 @@ def plot_csv_multiple_zoom(csv_filenames, labels, filename, start_epoch=1, end_e
 
 
 def plot_network_size():
-    lst_hidden_layers = [(100,), (500,), (24, 32), (300, 100), (500, 150)]
+    lst_hidden_layers = [(100,), (200,), (300,), (24, 32), (300, 100)]
     accuracy_ranges = []
     labels = []
     for hidden_layers in lst_hidden_layers:
         test_accuracies = test_mnist_one_hot(
             hidden_layers=hidden_layers,
-            csv_filename='hidden_layers_{}'.format('_'.join(str(layer) for layer in hidden_layers)))
+            csv_filename='network_size_{}'.format('_'.join(str(layer) for layer in hidden_layers)))
         accuracy_ranges.append(test_accuracies)
         labels.append('Hidden layers: {}'.format(hidden_layers))
     plot_test_accuracy_multiple(accuracy_ranges, labels, 'network_size')
 
 
 def save_network_size_to_csv():
-    hidden_layers = (500, 150)
-    filename = 'network_size_{}'.format(100)
-    test_mnist_one_hot(hidden_layers=hidden_layers, csv_filename=filename)
+    hidden_layers = (300,)
+    filename = 'network_size_{}'.format('{}'.format('_'.join(str(layer) for layer in hidden_layers)))
+    test_mnist_one_hot(hidden_layers=hidden_layers, csv_filename=filename, return_test_accuracies=False)
 
 
 def plot_network_size_csv():
-    lst_hidden_layers = [(100,), (500,), (24, 32), (300, 100), (500, 150)]
-    csv_filenames = ['hidden_layers_{}'.format('_'.join(str(layer) for layer in hidden_layers))
+    lst_hidden_layers = [(100,), (200,), (300,), (24, 32), (300, 100)]
+    csv_filenames = ['network_size_{}'.format('_'.join(str(layer) for layer in hidden_layers))
                      for hidden_layers in lst_hidden_layers]
-    labels = ['Hidden layers: ({})'.format(', '.join(str(layer) for layer in hidden_layers))
+    labels = ['Hidden layer sizes: ({})'.format(', '.join(str(layer) for layer in hidden_layers))
               for hidden_layers in lst_hidden_layers]
-    plot_csv_multiple_zoom(csv_filenames, labels, 'hidden_layers', start_epoch=0)
+    plot_csv_multiple_zoom(csv_filenames, labels, 'network_size', start_epoch=0)
 
 
 def plot_network_size_csv_zoom():
-    lst_hidden_layers = [(100,), (500,), (24, 32), (300, 100), (500, 150)]
-    csv_filenames = ['hidden_layers_{}'.format('_'.join(str(layer) for layer in hidden_layers))
+    lst_hidden_layers = [(100,), (200,), (300,), (24, 32), (300, 100)]
+    csv_filenames = ['network_size_{}'.format('_'.join(str(layer) for layer in hidden_layers))
                      for hidden_layers in lst_hidden_layers]
-    labels = ['Hidden layers: ({})'.format(','.join(str(layer) for layer in hidden_layers))
+    labels = ['Hidden layer sizes: ({})'.format(','.join(str(layer) for layer in hidden_layers))
               for hidden_layers in lst_hidden_layers]
-    plot_csv_multiple_zoom(csv_filenames, labels, 'hidden_layers_zoom', start_epoch=1)
+    plot_csv_multiple_zoom(csv_filenames, labels, 'network_size_zoom', start_epoch=1)
 
 
 def plot_logistic_vs_tanh():
@@ -187,7 +187,4 @@ def plot_learning_rate_decay_csv_zoom():
 
 
 if __name__ == '__main__':
-    # plot_network_size_csv()
-    # plot_network_size_csv_zoom()
-    plot_learning_rate_decay_csv_zoom()
-
+    plot_network_size_csv_zoom()
