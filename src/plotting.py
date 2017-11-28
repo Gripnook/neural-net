@@ -113,7 +113,7 @@ def plot_network_size_csv_zoom():
                      for hidden_layers in lst_hidden_layers]
     labels = ['Hidden layer sizes: ({})'.format(','.join(str(layer) for layer in hidden_layers))
               for hidden_layers in lst_hidden_layers]
-    plot_csv_multiple_zoom(csv_filenames, labels, 'network_size_zoom', start_epoch=1)
+    plot_csv_multiple_zoom(csv_filenames, labels, 'network_size_zoom')
 
 
 def plot_logistic_vs_tanh():
@@ -175,7 +175,7 @@ def plot_momentum_csv_zoom():
     momenta = [0.0, 0.3, 0.6, 0.9]
     csv_filenames = ['momentum_{}'.format(int(momentum * 100)) for momentum in momenta]
     labels = ['Momentum: {}'.format(momentum) for momentum in momenta]
-    plot_csv_multiple_zoom(csv_filenames, labels, 'momentum')
+    plot_csv_multiple_zoom(csv_filenames, labels, 'momentum_zoom')
 
 
 def plot_layer_decay():
@@ -196,7 +196,7 @@ def plot_layer_decay_csv_zoom():
     csv_filenames = ['layer_decay_{}'.format(int(layer_decay * 100)) for layer_decay in
                      layer_decays]
     labels = ['Layer decay: {}'.format(layer_decay) for layer_decay in layer_decays]
-    plot_csv_multiple_zoom(csv_filenames, labels, 'layer_decay', start_epoch=0)
+    plot_csv_multiple_zoom(csv_filenames, labels, 'layer_decay_zoom')
 
 
 if __name__ == '__main__':
