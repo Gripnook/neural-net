@@ -5,8 +5,9 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 from matplotlib.ticker import MaxNLocator
-
 from mnist_fully_connected import test_mnist_one_hot
+from neural_network import logistic_sigmoid, tanh_sigmoid
+
 
 # plt.rcParams["font.family"] = "Times New Roman"
 
@@ -71,6 +72,29 @@ def plot_from_csv_range(csv_filenames, labels, filename, start_epoch=0, end_epoc
     plt.ylabel('Test Accuracy')
     plt.legend()
     plt.grid(True)
+    f.savefig('plots/{}.pdf'.format(filename), bbox_inches='tight')
+
+
+def plot_functions(funcs, labels, filename, x_min=-3, x_max=3, y_min=-2, y_max=2, num_points=1000):
+    f = plt.figure()
+    ax = f.gca()
+    ax.spines['left'].set_position('center')
+    ax.spines['right'].set_color('none')
+    ax.spines['bottom'].set_position('center')
+    ax.spines['top'].set_color('none')
+    ax.spines['left'].set_smart_bounds(True)
+    ax.spines['bottom'].set_smart_bounds(True)
+    ax.xaxis.set_ticks_position('bottom')
+    ax.yaxis.set_ticks_position('left')
+    subdivision = (x_max - x_min) / num_points
+    x_range = [x_min + i * subdivision for i in range(num_points)]
+    for func, label in zip(funcs, labels):
+        y_range = [func(x) for x in x_range]
+        plt.plot(x_range, y_range, label=label)
+    plt.legend()
+    plt.grid(True)
+    plt.xticks([x for x in range(x_min, x_max + 1) if x != 0])
+    plt.yticks([y for y in range(y_min, y_max + 1) if y != 0])
     f.savefig('plots/{}.pdf'.format(filename), bbox_inches='tight')
 
 
@@ -201,17 +225,24 @@ def plot_network_comparison():
     plot_from_csv(csv_filenames, labels, 'network_comparison')
 
 
+def plot_logistic_vs_tanh_function():
+    funcs = (logistic_sigmoid, tanh_sigmoid)
+    labels = ('logistic', 'tanh')
+    plot_functions(funcs, labels, 'logistic_vs_tanh_function')
+
+
 if __name__ == '__main__':
-    plot_logistic_vs_tanh()
-    plot_learning_rate()
-    plot_learning_rate_csv_zoom()
-    plot_learning_rate_csv_zoom_2()
-    plot_batch_size()
-    plot_batch_size_csv_zoom()
-    plot_momentum()
-    plot_momentum_csv_zoom()
-    plot_layer_decay()
-    plot_layer_decay_csv_zoom()
-    plot_network_size()
-    plot_network_size_csv_zoom()
-    plot_network_comparison()
+    # plot_logistic_vs_tanh()
+    # plot_learning_rate()
+    # plot_learning_rate_csv_zoom()
+    # plot_learning_rate_csv_zoom_2()
+    # plot_batch_size()
+    # plot_batch_size_csv_zoom()
+    # plot_momentum()
+    # plot_momentum_csv_zoom()
+    # plot_layer_decay()
+    # plot_layer_decay_csv_zoom()
+    # plot_network_size()
+    # plot_network_size_csv_zoom()
+    # plot_network_comparison()
+    plot_logistic_vs_tanh_function()
