@@ -1,12 +1,11 @@
 from __future__ import division
 
-import csv
-
 import mnist
 
+from csv_saver import save_rows_to_csv
 from neural_network import NeuralNetwork
-from training import stochastic_gradient_descent
 from preprocessing import *
+from training import stochastic_gradient_descent
 
 
 def test_mnist_one_hot(num_train_examples=-1, num_test_examples=-1, hidden_layers=(100,), sigmoid='tanh',
@@ -77,15 +76,6 @@ def test_mnist_one_hot(num_train_examples=-1, num_test_examples=-1, hidden_layer
 
     if return_test_accuracies:
         return test_accuracies
-
-
-def save_rows_to_csv(filename, rows, header=None):
-    with open('csv/{}.csv'.format(filename), "wb") as f:
-        writer = csv.writer(f)
-        if header is not None:
-            writer.writerow(header)
-        for row in rows:
-            writer.writerow(row)
 
 
 if __name__ == '__main__':
