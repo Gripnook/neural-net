@@ -219,9 +219,8 @@ def plot_layer_decay_csv_zoom():
 
 
 def plot_network_comparison():
-    # TODO: ConvNet filename & label
-    csv_filenames = ('random', 'network_size_300', '')
-    labels = ('Random predictor', 'Fully connected network with 300 hidden units', 'Convolutional network')
+    csv_filenames = ('network_size_300', 'convolutional')
+    labels = ('Fully connected network with 300 hidden units', 'Convolutional network')
     plot_from_csv(csv_filenames, labels, 'network_comparison')
 
 
@@ -232,17 +231,17 @@ def plot_logistic_vs_tanh_function():
 
 
 if __name__ == '__main__':
-    # plot_logistic_vs_tanh()
-    # plot_learning_rate()
-    # plot_learning_rate_csv_zoom()
-    # plot_learning_rate_csv_zoom_2()
-    # plot_batch_size()
-    # plot_batch_size_csv_zoom()
-    # plot_momentum()
-    # plot_momentum_csv_zoom()
-    # plot_layer_decay()
-    # plot_layer_decay_csv_zoom()
-    # plot_network_size()
-    # plot_network_size_csv_zoom()
-    # plot_network_comparison()
+    plot_logistic_vs_tanh()
+    plot_learning_rate()
+    plot_learning_rate_csv_zoom()
+    plot_learning_rate_csv_zoom_2()
+    plot_batch_size()
+    plot_batch_size_csv_zoom()
+    plot_momentum()
+    plot_momentum_csv_zoom()
+    plot_layer_decay()
+    plot_layer_decay_csv_zoom()
+    plot_network_size()
+    plot_network_size_csv_zoom()
+    plot_network_comparison()
     plot_logistic_vs_tanh_function()
