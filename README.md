@@ -2,6 +2,8 @@
 
 An artificial neural network designed for ECSE-526 Artificial Intelligence.
 
+![GUI](presentation/figures/gui.png)
+
 ## Setup
 To install all the dependencies, run `pip install -r requirements.txt`. Tkinter is also required for the GUI tool. If it is not already included in your python distribution, it can be installed via `apt-get install python-tk`.
 
