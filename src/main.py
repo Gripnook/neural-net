@@ -1,17 +1,16 @@
 from __future__ import division
 
 from Tkinter import *
-from PIL import Image, ImageTk
 from ast import literal_eval
 
-import numpy as np
+import mnist
+from PIL import Image, ImageTk
 from scipy import misc
 from scipy.ndimage.filters import gaussian_filter
 
-import mnist
 from neural_network import NeuralNetwork
-from training import stochastic_gradient_descent
 from preprocessing import *
+from training import stochastic_gradient_descent
 
 
 class MNISTNeuralNetworkGUI(object):
