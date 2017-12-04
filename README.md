@@ -1,14 +1,14 @@
 # Artificial Neural Network
 
-Neural network for the ECSE-526 project.
+An artificial neural network designed for ECSE-526 Artificial Intelligence.
 
 ## Setup
 To install all the dependencies, run `pip install -r requirements.txt`. Tkinter is also required for the GUI tool. If it is not already included in your python distribution, it can be installed via `apt-get install python-tk`.
 
-## Running
+## Usage
 
 ### GUI
-To run the GUI tool, run the `main` method found in `main.py`.
+To launch the GUI tool, run the `main` method found in `main.py`.
 
 ### Fully Connected Network
 To train and test our fully connected network, run the `main` method found in `mnist_fully_connected.py`.
