@@ -3,7 +3,7 @@
 Neural network for the ECSE-526 project.
 
 ## Setup
-To install all the dependencies, run `pip install -r requirements.txt`. Tkinter is required for the GUI tool. If it is not already included in your python distribution, it can be installed via `apt-get install python-tk`.
+To install all the dependencies, run `pip install -r requirements.txt`. Tkinter is also required for the GUI tool. If it is not already included in your python distribution, it can be installed via `apt-get install python-tk`.
 
 ## Running
 
