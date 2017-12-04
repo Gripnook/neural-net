@@ -4,3 +4,4 @@ mnist
 tensorflow
 matplotlib
 pandas
+PIL
