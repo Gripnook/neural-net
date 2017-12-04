@@ -4,12 +4,15 @@ from Tkinter import *
 from ast import literal_eval
 
 import mnist
+import numpy as np
+
 from PIL import Image, ImageTk
 from scipy import misc
 from scipy.ndimage.filters import gaussian_filter
 
 from neural_network import NeuralNetwork
-from preprocessing import *
+from preprocessing import convert_mnist_labels_one_hot, convert_mnist_images_logistic, \
+    convert_mnist_images_train_tanh, convert_mnist_images_test_tanh, get_prediction_accuracy
 from training import stochastic_gradient_descent
 
 
