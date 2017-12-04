@@ -4,4 +4,4 @@ mnist
 tensorflow
 matplotlib
 pandas
-Pillow
+pillow
